@@ -1,33 +1,37 @@
 export const useTelegram = () => {
-  const isInitialized = ref(false);
-  const webApp = window.Telegram?.WebApp;
-  const user = ref<any>(null);
+    const isInitialized = ref(false);
+    const webApp = ref<any>(null);
+    const user = ref<any>(null);
   
-  const init = () => {
-    if (webApp) {
-      webApp.value = window.Telegram.WebApp;
-      isInitialized.value = true;
-      
-      if (webApp.value.initDataUnsafe?.user) {
-        user.value = webApp.value.initDataUnsafe.user;
+    const init = () => {
+      // Only run on client side
+      if (process.client) {
+        try {
+          if (window.Telegram?.WebApp) {
+            webApp.value = window.Telegram.WebApp;
+            isInitialized.value = true;
+            
+            if (webApp.value.initDataUnsafe?.user) {
+              user.value = webApp.value.initDataUnsafe.user;
+            }
+            
+            webApp.value.enableClosingConfirmation();
+            webApp.value.expand();
+          }
+        } catch (error) {
+          console.error('Error initializing Telegram WebApp:', error);
+        }
       }
-      
-      // Enable closing confirmation if needed
-      webApp.value.enableClosingConfirmation();
-      
-      // Expand webapp to full height
-      webApp.value.expand();
-    }
-  };
+    };
   
-  onMounted(() => {
-    init();
-  });
+    onMounted(() => {
+      init();
+    });
   
-  return {
-    isInitialized,
-    webApp,
-    user,
-    init
+    return {
+      isInitialized,
+      webApp,
+      user,
+      init
+    };
   };
-};

@@ -1,8 +1,9 @@
 <template>
     <div class="profile">
-      <template v-if="isInitialized">
-        <div v-if="user" class="profile-content">
-          <div class="profile-header">
+      <ClientOnly>
+        <template v-if="isInitialized">
+          <div v-if="user" class="profile-content">
+            <div class="profile-header">
             <div class="avatar" v-if="user.photo_url">
               <img :src="user.photo_url" :alt="user.username" />
             </div>
@@ -62,12 +63,13 @@
         <Loader2 :size="32" class="spin" />
         <p>Loading...</p>
       </div>
+     </ClientOnly>
     </div>
   </template>
   
   <script setup>
   import { User, MessageCircle, ShieldCheck, Star, Loader2 } from 'lucide-vue-next';
-  const { isInitialized, user } = useTelegram();
+  const { isInitialized, user } = process.client ? useTelegram() : { isInitialized: ref(false), user: ref(null) };
   </script>
   
   <style scoped>
