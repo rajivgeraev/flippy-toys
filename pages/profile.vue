@@ -1,108 +1,73 @@
 <template>
     <div class="profile">
-      <div v-if="isAvailable" class="profile-container">
-        <!-- User Info Section -->
-        <div class="user-info">
-          <img 
-            v-if="userPhotoUrl" 
-            :src="userPhotoUrl" 
-            alt="Profile Photo"
-            class="profile-photo"
-          />
-          <div v-else class="profile-photo-placeholder">
-            <User :size="40" />
+      <template v-if="isInitialized">
+        <div v-if="user" class="profile-content">
+          <div class="profile-header">
+            <div class="avatar" v-if="user.photo_url">
+              <img :src="user.photo_url" :alt="user.username" />
+            </div>
+            <div class="avatar placeholder" v-else>
+              <User :size="40" />
+            </div>
+            <div class="user-info">
+              <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+              <p class="username" v-if="user.username">@{{ user.username }}</p>
+            </div>
           </div>
-          
-          <h1 class="username">{{ userName }}</h1>
-          
-          <div class="info-grid">
-            <!-- User ID -->
-            <div class="info-item">
-              <div class="info-label">
-                <IdCard :size="16" />
-                <span>User ID</span>
-              </div>
-              <div class="info-value">{{ user?.id || 'N/A' }}</div>
-            </div>
   
-            <!-- Username -->
-            <div class="info-item">
-              <div class="info-label">
-                <AtSign :size="16" />
-                <span>Username</span>
-              </div>
-              <div class="info-value">@{{ user?.username || 'N/A' }}</div>
+          <div class="details">
+            <div class="detail-item">
+              <MessageCircle :size="20" />
+              <span>Language Code: {{ user.language_code }}</span>
             </div>
-  
-            <!-- Language -->
-            <div class="info-item">
-              <div class="info-label">
-                <Globe :size="16" />
-                <span>Language</span>
-              </div>
-              <div class="info-value">{{ user?.language_code?.toUpperCase() || 'N/A' }}</div>
+            <div class="detail-item">
+              <ShieldCheck :size="20" />
+              <span>Telegram ID: {{ user.id }}</span>
             </div>
+            <div class="detail-item premium" v-if="user.is_premium">
+              <Star :size="20" />
+              <span>Premium User</span>
+            </div>
+          </div>
   
-            <!-- Platform -->
-            <div class="info-item">
-              <div class="info-label">
-                <Monitor :size="16" />
-                <span>Platform</span>
-              </div>
-              <div class="info-value">{{ webApp?.platform || 'N/A' }}</div>
+          <div class="stats">
+            <div class="stat-item">
+              <h3>0</h3>
+              <p>Items Posted</p>
+            </div>
+            <div class="stat-item">
+              <h3>0</h3>
+              <p>Exchanges</p>
+            </div>
+            <div class="stat-item">
+              <h3>0</h3>
+              <p>Reviews</p>
             </div>
           </div>
         </div>
   
-        <!-- Color Theme -->
-        <div class="theme-info">
-          <div class="info-label">
-            <Palette :size="16" />
-            <span>Theme</span>
-          </div>
-          <div class="color-display">
-            <div class="color-item">
-              <div class="color-preview" :style="{ backgroundColor: webApp?.themeParams?.bg_color }"></div>
-              <span>Background</span>
-            </div>
-            <div class="color-item">
-              <div class="color-preview" :style="{ backgroundColor: webApp?.themeParams?.text_color }"></div>
-              <span>Text</span>
-            </div>
-            <div class="color-item">
-              <div class="color-preview" :style="{ backgroundColor: webApp?.themeParams?.hint_color }"></div>
-              <span>Hint</span>
-            </div>
-            <div class="color-item">
-              <div class="color-preview" :style="{ backgroundColor: webApp?.themeParams?.link_color }"></div>
-              <span>Link</span>
-            </div>
+        <div v-else class="login-prompt">
+          <User :size="64" class="login-icon" />
+          <h2>Login Required</h2>
+          <p>Please open this app through the Telegram bot to access your profile and start exchanging toys.</p>
+          <div class="steps">
+            <p>1. Open Telegram</p>
+            <p>2. Find @FlippyBot</p>
+            <p>3. Start the bot and open the web app</p>
           </div>
         </div>
-      </div>
+      </template>
   
-      <div v-else class="not-available">
-        <AlertTriangle :size="32" class="warning-icon" />
-        <h2>Telegram WebApp is not available</h2>
-        <p>This app must be opened from Telegram to access user data.</p>
+      <div v-else class="loading">
+        <Loader2 :size="32" class="spin" />
+        <p>Loading...</p>
       </div>
     </div>
   </template>
   
   <script setup>
-  import { computed, onMounted } from 'vue';
-  import { User, IdCard, AtSign, Globe, Monitor, Palette, AlertTriangle } from 'lucide-vue-next';
-  
-  const { user, webApp, isAvailable } = useTelegram();
-  
-  const userName = computed(() => {
-    if (!user) return 'Unknown User';
-    return [user.first_name, user.last_name].filter(Boolean).join(' ');
-  });
-  
-  const userPhotoUrl = computed(() => {
-    return user?.photo_url || null;
-  });
+  import { User, MessageCircle, ShieldCheck, Star, Loader2 } from 'lucide-vue-next';
+  const { isInitialized, user } = useTelegram();
   </script>
   
   <style scoped>
@@ -112,115 +77,149 @@
     margin: 0 auto;
   }
   
-  .profile-container {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .user-info {
-    text-align: center;
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
     margin-bottom: 24px;
   }
   
-  .profile-photo {
-    width: 100px;
-    height: 100px;
+  .avatar {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    margin-bottom: 16px;
-    object-fit: cover;
-  }
-  
-  .profile-photo-placeholder {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    overflow: hidden;
     background: #f0f0f0;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px;
+  }
+  
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .avatar.placeholder {
+    background: #e0e0e0;
     color: #666;
+  }
+  
+  .user-info h1 {
+    font-size: 1.5rem;
+    margin: 0;
   }
   
   .username {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
-  
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    text-align: left;
-  }
-  
-  .info-item {
-    padding: 12px;
-    background: #f8f9fa;
-    border-radius: 8px;
-  }
-  
-  .info-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
     color: #666;
-    margin-bottom: 4px;
-    font-size: 0.9rem;
+    margin-top: 4px;
   }
   
-  .info-value {
-    font-weight: 500;
-    font-size: 1rem;
-  }
-  
-  .theme-info {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid #eee;
-  }
-  
-  .color-display {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
-  }
-  
-  .color-item {
-    text-align: center;
-  }
-  
-  .color-preview {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    margin: 0 auto 8px;
-    border: 1px solid #eee;
-  }
-  
-  .not-available {
-    text-align: center;
-    padding: 40px 20px;
+  .details {
     background: white;
     border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .warning-icon {
-    color: #ff9800;
-    margin-bottom: 16px;
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    color: #333;
   }
   
-  .not-available h2 {
-    margin-bottom: 8px;
-    font-size: 1.2rem;
+  .detail-item:last-child {
+    border-bottom: none;
   }
   
-  .not-available p {
+  .detail-item.premium {
+    color: #FFD700;
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  
+  .stat-item {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-item h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #007bff;
+  }
+  
+  .stat-item p {
+    margin: 4px 0 0;
     color: #666;
+    font-size: 0.9rem;
+  }
+  
+  .login-prompt {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  .login-icon {
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .login-prompt h2 {
+    margin-bottom: 12px;
+    color: #333;
+  }
+  
+  .login-prompt p {
+    color: #666;
+    margin-bottom: 24px;
+  }
+  
+  .steps {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: left;
+  }
+  
+  .steps p {
+    margin: 8px 0;
+    color: #333;
+  }
+  
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 16px;
+    color: #666;
+  }
+  
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
   </style>

@@ -1,20 +1,33 @@
 export const useTelegram = () => {
-    const webApp = (window as any).Telegram?.WebApp;
-    
-    if (!webApp) {
-      console.warn('Telegram WebApp is not available');
-      return {
-        user: null,
-        webApp: null,
-        isAvailable: false
-      };
-    }
+  const isInitialized = ref(false);
+  const webApp = window.Telegram?.WebApp;
+  const user = ref<any>(null);
   
-    const user = webApp.initDataUnsafe?.user || null;
-    
-    return {
-      user,
-      webApp,
-      isAvailable: true
-    };
+  const init = () => {
+    if (webApp) {
+      webApp.value = window.Telegram.WebApp;
+      isInitialized.value = true;
+      
+      if (webApp.value.initDataUnsafe?.user) {
+        user.value = webApp.value.initDataUnsafe.user;
+      }
+      
+      // Enable closing confirmation if needed
+      webApp.value.enableClosingConfirmation();
+      
+      // Expand webapp to full height
+      webApp.value.expand();
+    }
   };
+  
+  onMounted(() => {
+    init();
+  });
+  
+  return {
+    isInitialized,
+    webApp,
+    user,
+    init
+  };
+};
