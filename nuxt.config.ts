@@ -3,16 +3,16 @@ export default defineNuxtConfig({
   app: {
     head: {
       script: [
-        { 
-          src: 'https://telegram.org/js/telegram-web-app.js', 
-          defer: true
-        }
-      ]
-    }
+        {
+          src: "https://telegram.org/js/telegram-web-app.js",
+          defer: true,
+        },
+      ],
+    },
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ["~/assets/css/main.css"],
 
-  compatibilityDate: '2024-11-01',
-  devtools: { enabled: true }
-})
+  compatibilityDate: "2024-11-01",
+  devtools: { enabled: true },
+});

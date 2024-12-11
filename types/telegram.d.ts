@@ -1,5 +1,5 @@
 interface Window {
   Telegram: {
-    WebApp: any
-  }
-} 
+    WebApp: any;
+  };
+}
