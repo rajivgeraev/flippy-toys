@@ -1,7 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  css: ['~/assets/css/main.css'],
+  app: {
+    head: {
+      script: [
+        {
+          src: "https://telegram.org/js/telegram-web-app.js",
+          async: true,
+          onload: "window.telegramScriptLoaded = true;",
+        },
+      ],
+    },
+  },
 
-  compatibilityDate: '2024-11-01',
-  devtools: { enabled: true }
-})
+  css: ["~/assets/css/main.css"],
+
+  compatibilityDate: "2024-11-01",
+  devtools: { enabled: true },
+});
