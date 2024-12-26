@@ -39,15 +39,16 @@ import { Home, Search, PlusSquare, User } from "lucide-vue-next";
 
 <style scoped>
 .app-layout {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 60px;
+  overflow: hidden;
 }
 
 .main {
   flex: 1;
-  padding: 1rem;
+  overflow-y: auto;
+  padding-bottom: 60px;
 }
 
 .bottom-nav {
@@ -61,6 +62,7 @@ import { Home, Search, PlusSquare, User } from "lucide-vue-next";
   justify-content: space-around;
   align-items: center;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
 }
 
 .nav-item {

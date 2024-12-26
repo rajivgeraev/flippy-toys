@@ -89,10 +89,9 @@ import {
   AlertCircle,
 } from "lucide-vue-next";
 
-// Добавим больше отладочной информации
-const { isInitialized, user, initError } = useTelegram();
+import { telegram } from '~/composables/useTelegram';
+const { isInitialized, user, initError } = telegram;
 
-// Добавим наблюдение за изменениями
 watch([isInitialized, user], ([newInit, newUser]) => {
   console.log("State changed:", {
     isInitialized: newInit,
@@ -101,6 +100,7 @@ watch([isInitialized, user], ([newInit, newUser]) => {
   });
 });
 </script>
+
 
 <style scoped>
 .profile {
@@ -250,6 +250,7 @@ watch([isInitialized, user], ([newInit, newUser]) => {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
