@@ -1,4 +1,6 @@
-export const useTelegram = () => {
+import type { RefSymbol } from "@vue/reactivity";
+
+const useGlobalTelegram = () => {
   const isInitialized = ref(false);
   const webApp = ref<any>(null);
   const user = ref<any>(null);
@@ -18,7 +20,6 @@ export const useTelegram = () => {
         }
       }, 100);
 
-      // Таймаут через 5 секунд
       setTimeout(() => {
         clearInterval(checkInterval);
         resolve(false);
@@ -28,77 +29,65 @@ export const useTelegram = () => {
 
   const init = async () => {
     if (import.meta.client) {
-      console.log("Init started:", {
+      console.log('Init started:', {
         timestamp: new Date().toISOString(),
-        hasWindow: typeof window !== "undefined",
-        hasTelegram: !!window.Telegram,
+        hasWindow: typeof window !== 'undefined',
+        hasTelegram: !!window.Telegram
       });
 
       try {
         const scriptLoaded = await waitForTelegramScript();
 
         if (!scriptLoaded) {
-          throw new Error("Telegram WebApp script failed to load");
+          throw new Error('Telegram WebApp script failed to load');
         }
 
         if (window.Telegram?.WebApp) {
           webApp.value = window.Telegram.WebApp;
 
-          // Проверяем валидность данных
           const initData = new URLSearchParams(webApp.value.initData);
-          const authDate = parseInt(initData.get("auth_date") || "0");
+          const authDate = parseInt(initData.get('auth_date') || '0');
           const currentTime = Math.floor(Date.now() / 1000);
 
-          console.log("Auth validation:", {
+          console.log('Auth validation:', {
             authDate,
             currentTime,
             timeDifference: currentTime - authDate,
-            initDataUnsafe: webApp.value.initDataUnsafe,
+            initDataUnsafe: webApp.value.initDataUnsafe
           });
 
           if (webApp.value.initDataUnsafe?.user) {
             user.value = webApp.value.initDataUnsafe.user;
             isInitialized.value = true;
             webApp.value.expand();
+
+            const platform = webApp.value.platform;
+            if (platform === 'android' || platform === 'ios') {
+              webApp.value.requestFullscreen();
+            }
+
           } else {
-            throw new Error("No user data in initDataUnsafe");
+            throw new Error('No user data in initDataUnsafe');
           }
         }
       } catch (error) {
-        console.error("Initialization error:", {
+        console.error('Initialization error:', {
           error,
           timestamp: new Date().toISOString(),
-          windowState: Object.keys(window),
+          windowState: Object.keys(window)
         });
-        initError.value =
-          error instanceof Error ? error.message : "Unknown error";
+        initError.value = error instanceof Error ? error.message : 'Unknown error';
       }
     }
   };
-
-  // Добавляем автоматическую переинициализацию при потере данных
-  if (import.meta.client) {
-    const checkInterval = setInterval(() => {
-      if (isInitialized.value && !user.value) {
-        console.log("Detected data loss, reinitializing...");
-        init();
-      }
-    }, 5000);
-
-    onUnmounted(() => {
-      clearInterval(checkInterval);
-    });
-  }
-
-  onMounted(() => {
-    init();
-  });
 
   return {
     isInitialized,
     webApp,
     user,
     initError,
-    init,
+    init
   };
 };
+
+export const telegram = useGlobalTelegram();
