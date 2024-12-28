@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-screen bg-gray-50">
         <!-- Header -->
-        <header class="px-4 py-3 bg-white shadow">
+        <header v-if="route.path === '/'" class="px-4 py-3 bg-white shadow mt-safe-area">
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold text-purple-600">Flippy Toys</h1>
                 <div class="flex items-center space-x-2">
@@ -15,12 +15,12 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto pb-safe-bottom">
             <slot />
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bg-white border-t">
+        <nav class="bg-white border-t mb-safe-area">
             <div class="flex justify-around py-3">
                 <NuxtLink to="/" class="flex flex-col items-center"
                     :class="route.path === '/' ? 'text-purple-600' : 'text-gray-500'">
@@ -50,3 +50,25 @@
 <script setup>
 const route = useRoute()
 </script>
+
+<style>
+/* Добавляем CSS-переменные для безопасных областей */
+:root {
+    --sat: env(safe-area-inset-top);
+    --sab: env(safe-area-inset-bottom);
+}
+
+/* Классы для безопасных отступов */
+.mt-safe-area {
+    margin-top: max(16px, var(--sat));
+}
+
+.mb-safe-area {
+    margin-bottom: max(0px, var(--sab));
+}
+
+.pb-safe-bottom {
+    padding-bottom: calc(56px + var(--sab));
+    /* 56px - высота нижней навигации */
+}
+</style>
