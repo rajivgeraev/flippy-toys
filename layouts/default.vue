@@ -3,7 +3,7 @@
         <!-- Header -->
         <header class="px-4 py-3 bg-white shadow">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl font-bold text-purple-600">ToyShare</h1>
+                <h1 class="text-xl font-bold text-purple-600">Flippy Toys</h1>
                 <div class="flex items-center space-x-2">
                     <div class="relative w-64">
                         <input type="text" placeholder="Поиск игрушек..."
