@@ -14,6 +14,12 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/main.css"],
 
+  // Добавляем новые модули
+  modules: [
+    '@nuxtjs/tailwindcss',
+    'nuxt-icon'
+  ],
+
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
 });

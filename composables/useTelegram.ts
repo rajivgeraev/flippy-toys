@@ -63,7 +63,7 @@ const useGlobalTelegram = () => {
 
             const platform = webApp.value.platform;
             if (platform === 'android' || platform === 'ios') {
-              webApp.value.requestFullscreen();
+              // webApp.value.requestFullscreen();
             }
 
           } else {

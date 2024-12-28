@@ -1,103 +1,74 @@
 <template>
-  <div class="app-layout">
-    <main class="main">
-      <slot />
-    </main>
+    <div class="flex flex-col h-screen bg-gray-50">
+        <!-- Header -->
+        <header v-if="route.path === '/'" class="px-4 py-3 bg-white shadow mt-safe-area">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-bold text-purple-600">Flippy Toys</h1>
+                <div class="flex items-center space-x-2">
+                    <div class="relative w-64">
+                        <input type="text" placeholder="Поиск игрушек..."
+                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300" />
+                        <Icon name="lucide:search" class="absolute right-3 top-2.5 text-gray-400" size="20" />
+                    </div>
+                </div>
+            </div>
+        </header>
 
-    <nav class="bottom-nav">
-      <NuxtLink to="/" class="nav-item">
-        <div class="nav-icon">
-          <Home :size="24" />
-        </div>
-        <span class="nav-label">Home</span>
-      </NuxtLink>
-      <NuxtLink to="/browse" class="nav-item">
-        <div class="nav-icon">
-          <Search :size="24" />
-        </div>
-        <span class="nav-label">Browse</span>
-      </NuxtLink>
-      <NuxtLink to="/post" class="nav-item">
-        <div class="nav-icon">
-          <PlusSquare :size="24" />
-        </div>
-        <span class="nav-label">Post</span>
-      </NuxtLink>
-      <NuxtLink to="/profile" class="nav-item">
-        <div class="nav-icon">
-          <User :size="24" />
-        </div>
-        <span class="nav-label">Profile</span>
-      </NuxtLink>
-    </nav>
-  </div>
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto pb-safe-bottom">
+            <slot />
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bg-white border-t mb-safe-area">
+            <div class="flex justify-around py-3">
+                <NuxtLink to="/" class="flex flex-col items-center"
+                    :class="route.path === '/' ? 'text-purple-600' : 'text-gray-500'">
+                    <Icon name="lucide:home" size="24" />
+                    <span class="text-xs mt-1">Главная</span>
+                </NuxtLink>
+                <NuxtLink to="/favorites" class="flex flex-col items-center"
+                    :class="route.path === '/favorites' ? 'text-purple-600' : 'text-gray-500'">
+                    <Icon name="lucide:heart" size="24" />
+                    <span class="text-xs mt-1">Избранное</span>
+                </NuxtLink>
+                <NuxtLink to="/messages" class="flex flex-col items-center"
+                    :class="route.path === '/messages' ? 'text-purple-600' : 'text-gray-500'">
+                    <Icon name="lucide:message-circle" size="24" />
+                    <span class="text-xs mt-1">Сообщения</span>
+                </NuxtLink>
+                <NuxtLink to="/profile" class="flex flex-col items-center"
+                    :class="route.path === '/profile' ? 'text-purple-600' : 'text-gray-500'">
+                    <Icon name="lucide:user" size="24" />
+                    <span class="text-xs mt-1">Профиль</span>
+                </NuxtLink>
+            </div>
+        </nav>
+    </div>
 </template>
 
 <script setup>
-import { Home, Search, PlusSquare, User } from "lucide-vue-next";
+const route = useRoute()
 </script>
 
-<style scoped>
-.app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 60px;
+<style>
+/* Добавляем CSS-переменные для безопасных областей */
+:root {
+    --sat: env(safe-area-inset-top);
+    --sab: env(safe-area-inset-bottom);
 }
 
-.main {
-  flex: 1;
-  padding: 1rem;
+/* Классы для безопасных отступов */
+.mt-safe-area {
+    margin-top: max(16px, var(--sat));
 }
 
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background-color: white;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+.mb-safe-area {
+    margin-bottom: max(0px, var(--sab));
 }
 
-.nav-item {
-  text-decoration: none;
-  color: #666;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px;
-  width: 25%;
-}
-
-.nav-icon {
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-label {
-  font-size: 0.75rem;
-}
-
-/* Active link styling */
-.nav-item.router-link-active {
-  color: #007bff;
-}
-
-.router-link-active .nav-icon {
-  color: #007bff;
-}
-
-/* Optional: Add a safe area padding for iOS devices */
-@supports (padding: max(0px)) {
-  .bottom-nav {
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
-    height: calc(60px + env(safe-area-inset-bottom, 0px));
-  }
+.pb-safe-bottom {
+    padding-bottom: calc(56px + var(--sab));
+    /* 56px - высота нижней навигации */
 }
 </style>
