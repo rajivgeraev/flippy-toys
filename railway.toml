@@ -1,25 +1,10 @@
-[services]
-
-# === FRONTEND (Nuxt) через Nixpacks ===
 [services.frontend]
-# Railway автоматически определит, что это Node-проект (по package.json)
 type = "nixpacks"
-# Путь к папке, где лежит фронтенд
 path = "frontend"
-# Следить за изменениями в папке frontend
-watchPatterns = ["frontend/**"]
-# Явно укажем команды сборки и запуска
 buildCmd = "npm install && npm run build"
-# Для Nuxt 3 в продакшене: npm run start (или npm run preview, смотря как у вас настроено)
 startCmd = "npm run start"
 
-# === BACKEND (Go) через Dockerfile ===
 [services.backend]
-# Используем Docker
 type = "docker"
-# Имя Dockerfile внутри папки backend/auth
 dockerfile = "Dockerfile"
-# Каталог, из которого билдим
 buildContext = "backend/auth"
-# Следить за изменениями в backend/auth
-watchPatterns = ["backend/auth/**"]
