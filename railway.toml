@@ -1,0 +1,12 @@
+[build]
+[build.frontend]
+builder = "dockerfile"
+dockerfilePath = "frontend/Dockerfile"
+watchPatterns = ["/frontend/**"]
+buildCommand = "cd frontend && npm install && npm run build"
+
+# [build.backend]
+# builder = "dockerfile"
+# dockerfilePath = "backend/auth/Dockerfile"
+# watchPatterns = ["/backend/**"]
+# buildCommand = "cd backend && go build"
