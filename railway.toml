@@ -1,9 +1,7 @@
 [build]
 [build.frontend]
-builder = "dockerfile"
-dockerfilePath = "frontend/Dockerfile"
+builder = "nixpacks"
 watchPatterns = ["/frontend/**"]
-buildCommand = "cd frontend && npm install && npm run build"
 
 # [build.backend]
 # builder = "dockerfile"
