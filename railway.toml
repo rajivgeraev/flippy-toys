@@ -1,23 +1,12 @@
 [services]
-# 1. FRONTEND-СЕРВИС через Nixpacks
 [services.frontend]
-# Тип: nixpacks (Node.js, Python, и т.д. Railway определяет по package.json и т.п.)
 type = "nixpacks"
-# Путь к папке фронтенда (если нужно)
+# Говорим, что корень Nixpacks-проекта — папка frontend
 path = "frontend"
-# Вотчеры - когда меняются файлы внутри /frontend, будет триггериться билд
 watchPatterns = ["frontend/**"]
-# Если нужно, можно задать кастомные команды
-# buildCmd = "npm install && npm run build"
-# startCmd = "npm run start"
 
-# 2. BACKEND-СЕРВИС через Docker
 [services.backend]
-# Тип: docker
 type = "docker"
-# Путь к Dockerfile
 dockerfile = "Dockerfile"
-# Build context указывает, в какой директории запускать docker build
-buildContext = "backend/auth"
-# Вотчеры - при изменении файлов в /backend вызывать билд
+buildContext = "backend"
 watchPatterns = ["backend/**"]
