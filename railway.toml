@@ -8,3 +8,8 @@ watchPatterns = ["/frontend/**"]
 # dockerfilePath = "backend/auth/Dockerfile"
 # watchPatterns = ["/backend/**"]
 # buildCommand = "cd backend && go build"
+
+[build.backend]
+builder = "dockerfile"
+dockerfilePath = "backend/auth/Dockerfile"
+watchPatterns = ["/backend/**"]
