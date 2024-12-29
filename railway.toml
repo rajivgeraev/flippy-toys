@@ -11,5 +11,6 @@ watchPatterns = ["/frontend/**"]
 
 [build.backend]
 builder = "dockerfile"
-dockerfilePath = "backend/auth/Dockerfile"
+dockerfile = "backend/auth/Dockerfile"
+context = "backend/auth"
 watchPatterns = ["/backend/**"]
