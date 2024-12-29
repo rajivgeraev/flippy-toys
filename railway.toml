@@ -1,9 +1,7 @@
-[services]
-[services.frontend]
-type = "nixpacks"
-path = "frontend"
-buildCmd = "npm install && npm run build"
-startCmd = "npm run start"
+[build]
+[build.frontend]
+builder = "nixpacks"
+watchPatterns = ["/frontend/**"]
 
 # [services.backend]
 # type = "docker"
