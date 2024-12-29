@@ -16,7 +16,7 @@ watchPatterns = ["frontend/**"]
 # Тип: docker
 type = "docker"
 # Путь к Dockerfile
-dockerfile = "backend/auth/Dockerfile"
+dockerfile = "Dockerfile"
 # Build context указывает, в какой директории запускать docker build
 buildContext = "backend/auth"
 # Вотчеры - при изменении файлов в /backend вызывать билд
