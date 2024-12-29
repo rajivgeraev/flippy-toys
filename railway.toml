@@ -1,33 +1,23 @@
-[build]
-builder = "dockerfile" # Устанавливаем глобальный билдер
+[services]
+# 1. FRONTEND-СЕРВИС через Nixpacks
+[services.frontend]
+# Тип: nixpacks (Node.js, Python, и т.д. Railway определяет по package.json и т.п.)
+type = "nixpacks"
+# Путь к папке фронтенда (если нужно)
+path = "frontend"
+# Вотчеры - когда меняются файлы внутри /frontend, будет триггериться билд
+watchPatterns = ["frontend/**"]
+# Если нужно, можно задать кастомные команды
+# buildCmd = "npm install && npm run build"
+# startCmd = "npm run start"
 
-[deploy]
-startCommand = "cd frontend && npm run start"
-numReplicas = 1
-
-[[services]]
-name = "frontend"
-dockerfile = "frontend/Dockerfile"
-context = "frontend"
-
-[[services]]
-name = "backend"
+# 2. BACKEND-СЕРВИС через Docker
+[services.backend]
+# Тип: docker
+type = "docker"
+# Путь к Dockerfile
 dockerfile = "backend/auth/Dockerfile"
-context = "backend/auth"
-
-# [build]
-# [build.frontend]
-# builder = "nixpacks"
-# watchPatterns = ["/frontend/**"]
-
-# [build.backend]
-# builder = "dockerfile"
-# dockerfilePath = "backend/auth/Dockerfile"
-# watchPatterns = ["/backend/**"]
-# buildCommand = "cd backend && go build"
-
-# [build.backend]
-# builder = "dockerfile"
-# dockerfile = "backend/auth/Dockerfile"
-# context = "backend/auth"
-# watchPatterns = ["/backend/**"]
+# Build context указывает, в какой директории запускать docker build
+buildContext = "backend/auth"
+# Вотчеры - при изменении файлов в /backend вызывать билд
+watchPatterns = ["backend/**"]
