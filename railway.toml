@@ -4,7 +4,7 @@ path = "frontend"
 buildCmd = "npm install && npm run build"
 startCmd = "npm run start"
 
-[services.backend]
-type = "docker"
-dockerfile = "Dockerfile"
-buildContext = "backend/auth"
+# [services.backend]
+# type = "docker"
+# dockerfile = "Dockerfile"
+# buildContext = "backend/auth"
