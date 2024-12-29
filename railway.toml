@@ -1,3 +1,4 @@
+[services]
 [services.frontend]
 type = "nixpacks"
 path = "frontend"
