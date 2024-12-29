@@ -1,7 +1,24 @@
 [build]
-[build.frontend]
-builder = "nixpacks"
-watchPatterns = ["/frontend/**"]
+builder = "dockerfile" # Устанавливаем глобальный билдер
+
+[deploy]
+startCommand = "cd frontend && npm run start"
+numReplicas = 1
+
+[[services]]
+name = "frontend"
+dockerfile = "frontend/Dockerfile"
+context = "frontend"
+
+[[services]]
+name = "backend"
+dockerfile = "backend/auth/Dockerfile"
+context = "backend/auth"
+
+# [build]
+# [build.frontend]
+# builder = "nixpacks"
+# watchPatterns = ["/frontend/**"]
 
 # [build.backend]
 # builder = "dockerfile"
@@ -9,8 +26,8 @@ watchPatterns = ["/frontend/**"]
 # watchPatterns = ["/backend/**"]
 # buildCommand = "cd backend && go build"
 
-[build.backend]
-builder = "dockerfile"
-dockerfile = "backend/auth/Dockerfile"
-context = "backend/auth"
-watchPatterns = ["/backend/**"]
+# [build.backend]
+# builder = "dockerfile"
+# dockerfile = "backend/auth/Dockerfile"
+# context = "backend/auth"
+# watchPatterns = ["/backend/**"]
