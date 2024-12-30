@@ -1,12 +1,4 @@
-[services]
-
-  [services.frontend]
-  buildType = "nixpacks"
-  path = "frontend"
-  buildCommand = "npm install && npm run build"
-  startCommand = "npm run start"
-
-  [services.backend]
-  buildType = "docker"
-  path = "backend/auth"
-  dockerfile = "Dockerfile"
+[build]
+[build.frontend]
+builder = "nixpacks"
+watchPatterns = ["/frontend/**"]
