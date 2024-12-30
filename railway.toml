@@ -1,3 +1,4 @@
 [build]
-builder = "dockerfile"
-dockerfilePath = "frontend/Dockerfile"
+[build.frontend]
+builder = "nixpacks"
+watchPatterns = ["/frontend/**"]
