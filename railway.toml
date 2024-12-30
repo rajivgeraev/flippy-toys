@@ -1,9 +1,12 @@
-[build]
-[build.frontend]
-builder = "nixpacks"
-watchPatterns = ["/frontend/**"]
+[services]
 
-# [services.backend]
-# type = "docker"
-# dockerfile = "Dockerfile"
-# buildContext = "backend/auth"
+  [services.frontend]
+  buildType = "nixpacks"
+  path = "frontend"
+  buildCommand = "npm install && npm run build"
+  startCommand = "npm run start"
+
+  [services.backend]
+  buildType = "docker"
+  path = "backend/auth"
+  dockerfile = "Dockerfile"
