@@ -1,5 +1,3 @@
-// internal/handler/user.go
-
 package handler
 
 import (
@@ -8,7 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/config"
 	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/model"
+	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/telegram"
 )
 
 type UserHandler struct {

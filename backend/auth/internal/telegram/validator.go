@@ -1,5 +1,3 @@
-// internal/telegram/validator.go
-
 package telegram
 
 import (
@@ -8,8 +6,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -97,7 +97,13 @@ func getAuthDate(values url.Values) (int64, error) {
 		return 0, errors.New("auth_date is missing")
 	}
 
-	return time.Parse("auth_date", authDateStr)
+	// Преобразуем строку в int64
+	authDate, err := strconv.ParseInt(authDateStr, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid auth_date format: %v", err)
+	}
+
+	return authDate, nil
 }
 
 func parseInitData(values url.Values) (*InitData, error) {
