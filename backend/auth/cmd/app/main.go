@@ -14,17 +14,14 @@ import (
 func main() {
     r := mux.NewRouter()
     
+    // Middleware
     r.Use(middleware.Logger)
     r.Use(middleware.CORS)
     
     userHandler := handler.NewUserHandler()
     r.HandleFunc("/api/v1/users/me", userHandler.GetMe).Methods("GET", "OPTIONS")
     
-    port := os.Getenv("PORT")
-    if port == "" {
-        port = "8080"
-    }
-    
+    port := ":8080"
     log.Printf("Server starting on port %s", port)
-    log.Fatal(http.ListenAndServe(":"+port, r))
- }
+    log.Fatal(http.ListenAndServe(port, r))
+}
