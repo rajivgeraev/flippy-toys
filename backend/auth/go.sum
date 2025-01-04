@@ -1,2 +1,4 @@
 github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
 github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
+github.com/telegram-mini-apps/init-data-golang v1.3.0 h1:SxhdwmcKokxN13mqHZEsXn3NA2xZ8XzeyxaMquhC5TU=
+github.com/telegram-mini-apps/init-data-golang v1.3.0/go.mod h1:GG4HnRx9ocjD4MjjzOw7gf9Ptm0NvFbDr5xqnfFOYuY=

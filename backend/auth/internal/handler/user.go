@@ -44,16 +44,20 @@ func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Successfully returned user data for TelegramID: %d", mockUser.TelegramID)
 }
 
-// В ValidateUser используем конфиг:
 func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
+	log.Println("Starting validation...")
+
 	var req struct {
 		InitData string `json:"init_data"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.Printf("Error decoding request: %v", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Received init_data: %s", req.InitData)
 
 	userData, err := telegram.ValidateInitData(req.InitData, h.cfg.BotToken)
 	if err != nil {
@@ -61,6 +65,8 @@ func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Telegram data", http.StatusUnauthorized)
 		return
 	}
+
+	log.Printf("Validation successful: %+v", userData)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(userData)
