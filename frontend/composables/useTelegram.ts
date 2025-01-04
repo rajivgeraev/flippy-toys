@@ -1,4 +1,5 @@
 import type { RefSymbol } from "@vue/reactivity";
+import { api } from '~/services/api';
 
 const useGlobalTelegram = () => {
   const isInitialized = ref(false);
@@ -57,8 +58,12 @@ const useGlobalTelegram = () => {
           });
 
           if (webApp.value.initDataUnsafe?.user) {
-            user.value = webApp.value.initDataUnsafe.user;
+            const validationResult = await api.validateUser(webApp.value.initData);
+
+            user.value = validationResult.user;
+            // user.value = webApp.value.initDataUnsafe.user;
             isInitialized.value = true;
+
             webApp.value.expand();
 
             const platform = webApp.value.platform;
