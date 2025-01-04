@@ -83,6 +83,7 @@ func parseInitData(values url.Values) (*InitData, error) {
 		return nil, fmt.Errorf("failed to parse user data: %v", err)
 	}
 	data.User = user
+	data.User.Username = "Dunduki"
 
 	// Дополнительные поля
 	data.QueryID = values.Get("query_id")
