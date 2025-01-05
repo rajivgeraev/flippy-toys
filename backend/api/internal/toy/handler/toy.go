@@ -3,6 +3,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -111,28 +112,28 @@ func (h *ToyHandler) GetToy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ToyHandler) GetUserToys(w http.ResponseWriter, r *http.Request) {
-	log.Printf("=== GetUserToys Handler ===")
+	fmt.Printf("=== GetUserToys Handler ===\n")
 
 	userID, ok := r.Context().Value("user_id").(uuid.UUID)
 	if !ok {
-		log.Printf("No user_id in context")
+		fmt.Printf("No user_id in context\n")
 		http.Error(w, "User not found", http.StatusUnauthorized)
 		return
 	}
-	log.Printf("Getting toys for user: %s", userID)
+	fmt.Printf("Getting toys for user: %s\n", userID)
 
 	toys, err := h.service.GetToysByUserID(userID)
 	if err != nil {
-		log.Printf("Error getting toys: %v", err)
+		fmt.Printf("Error getting toys: %v\n", err)
 		http.Error(w, "Failed to get toys", http.StatusInternalServerError)
 		return
 	}
 
 	if toys == nil {
-		log.Printf("No toys found, returning empty array")
+		fmt.Printf("No toys found, returning empty array\n")
 		toys = []model.Toy{}
 	} else {
-		log.Printf("Found %d toys", len(toys))
+		fmt.Printf("Found %d toys\n", len(toys))
 	}
 
 	w.Header().Set("Content-Type", "application/json")

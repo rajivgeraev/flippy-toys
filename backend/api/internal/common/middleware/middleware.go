@@ -41,35 +41,35 @@ func Logger(next http.Handler) http.Handler {
 func TelegramAuth(botToken string, userService UserService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fmt.Printf("=== TelegramAuth Middleware ===")
-			fmt.Printf("Request URL: %s", r.URL.Path)
-			fmt.Printf("Request Method: %s", r.Method)
+			fmt.Printf("=== TelegramAuth Middleware ===\n")
+			fmt.Printf("Request URL: %s\n", r.URL.Path)
+			fmt.Printf("Request Method: %s\n", r.Method)
 
 			initData := r.Header.Get("X-Telegram-Init-Data")
 			if initData == "" {
-				fmt.Printf("No auth data provided")
+				fmt.Printf("No auth data provided\n")
 				http.Error(w, "No auth data provided", http.StatusUnauthorized)
 				return
 			}
 
 			telegramData, err := telegram.ValidateInitData(initData, botToken)
 			if err != nil {
-				fmt.Printf("Invalid auth data: %v", err)
+				fmt.Printf("Invalid auth data: %v\n", err)
 				http.Error(w, "Invalid auth data", http.StatusUnauthorized)
 				return
 			}
 
-			fmt.Printf("Telegram User ID: %d", telegramData.User.ID)
+			fmt.Printf("Telegram User ID: %d\n", telegramData.User.ID)
 
 			// Получаем пользователя из БД
 			user, err := userService.GetUserByTelegramID(telegramData.User.ID)
 			if err != nil {
-				fmt.Printf("Error getting user: %v", err)
+				fmt.Printf("Error getting user: %v\n", err)
 				http.Error(w, "User not found", http.StatusUnauthorized)
 				return
 			}
 
-			fmt.Printf("User UUID: %s", user.ID)
+			fmt.Printf("User UUID: %s\n", user.ID)
 
 			ctx := context.WithValue(r.Context(), "telegram_id", telegramData.User.ID)
 			ctx = context.WithValue(ctx, "user_id", user.ID)

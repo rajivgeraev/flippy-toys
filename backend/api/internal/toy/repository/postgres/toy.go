@@ -194,8 +194,8 @@ func (r *ToyRepository) ListActive(limit, offset int) ([]model.Toy, error) {
 }
 
 func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
-	fmt.Printf("=== Repository: GetByUserID ===")
-	fmt.Printf("Querying toys for user: %s", userID)
+	fmt.Printf("=== Repository: GetByUserID ===\n")
+	fmt.Printf("Querying toys for user: %s\n", userID)
 
 	query := `
         SELECT t.id, t.user_id, t.title, t.description, 
@@ -207,7 +207,7 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 
 	rows, err := r.db.Query(query, userID)
 	if err != nil {
-		fmt.Printf("Query error: %v", err)
+		fmt.Printf("Query error: %v\n", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -240,7 +240,7 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 		toys = append(toys, toy)
 	}
 
-	fmt.Printf("Found %d toys", len(toys))
+	fmt.Printf("Found %d toys\n", len(toys))
 
 	return toys, rows.Err()
 }
