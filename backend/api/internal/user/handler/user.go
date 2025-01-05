@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/config"
-	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/model"
-	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/telegram"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/auth/telegram"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/config"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/model"
 )
 
 type UserHandler struct {

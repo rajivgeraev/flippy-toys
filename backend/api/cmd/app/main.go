@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/config"
-	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/handler"
-	"github.com/rajivgeraev/flippy-toys/backend/auth/internal/middleware"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/config"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/middleware"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/handler"
 )
 
 func main() {

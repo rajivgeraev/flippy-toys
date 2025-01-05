@@ -1,0 +1,4 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "backend/api/Dockerfile"
+buildCommand = "cd backend/api && go build"

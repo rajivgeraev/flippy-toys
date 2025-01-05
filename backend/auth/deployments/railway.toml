@@ -1,4 +1,0 @@
-[build]
-builder = "dockerfile"
-dockerfilePath = "backend/auth/Dockerfile"
-buildCommand = "cd backend/auth && go build"
