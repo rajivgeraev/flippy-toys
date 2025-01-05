@@ -3,6 +3,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -27,6 +28,8 @@ func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		InitData string `json:"init_data"`
 	}
+
+	fmt.Printf("Telegram InitData : %s\n", req.InitData)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		log.Printf("Error decoding request: %v", err)
