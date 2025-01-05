@@ -1,52 +1,29 @@
+// internal/user/handler/user.go
 package handler
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/rajivgeraev/flippy-toys/backend/api/internal/auth/telegram"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/config"
-	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/model"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/service"
 )
 
 type UserHandler struct {
-	cfg *config.Config
+	cfg     *config.Config
+	service *service.UserService
 }
 
-func NewUserHandler(cfg *config.Config) *UserHandler {
+func NewUserHandler(cfg *config.Config, service *service.UserService) *UserHandler {
 	return &UserHandler{
-		cfg: cfg,
+		cfg:     cfg,
+		service: service,
 	}
 }
 
-func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
-	mockUser := model.User{
-		TelegramID: 123456789,
-		Username:   "johndoe",
-		FirstName:  "John",
-		LastName:   "Doe",
-		IsPremium:  true,
-		PhotoURL:   "https://t.me/i/userpic/320/example.jpg",
-		CreatedAt:  time.Now().Add(-24 * time.Hour),
-		LastLogin:  time.Now(),
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	if err := json.NewEncoder(w).Encode(mockUser); err != nil {
-		log.Printf("Error encoding response: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	log.Printf("Successfully returned user data for TelegramID: %d", mockUser.TelegramID)
-}
-
+// ValidateUser обрабатывает первичную аутентификацию через Telegram
 func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("Starting validation...")
-
 	var req struct {
 		InitData string `json:"init_data"`
 	}
@@ -57,17 +34,78 @@ func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Received init_data: %s", req.InitData)
-
-	userData, err := telegram.ValidateInitData(req.InitData, h.cfg.BotToken)
+	user, err := h.service.ProcessTelegramAuth(req.InitData, h.cfg.BotToken)
 	if err != nil {
-		log.Printf("Error validating initData: %v", err)
-		http.Error(w, "Invalid Telegram data", http.StatusUnauthorized)
+		log.Printf("Error processing telegram auth: %v", err)
+		http.Error(w, "Authentication failed", http.StatusUnauthorized)
 		return
 	}
 
-	log.Printf("Validation successful: %+v", userData)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}
+
+// UpdatePhone обновляет номер телефона пользователя
+func (h *UserHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		TelegramID int64  `json:"telegram_id"`
+		Phone      string `json:"phone"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err := h.service.UpdatePhone(req.TelegramID, req.Phone)
+	if err != nil {
+		log.Printf("Error updating phone: %v", err)
+		http.Error(w, "Failed to update phone", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// GetMe возвращает информацию о текущем пользователе
+func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
+	// Получаем telegram_id из контекста (установленного middleware)
+	telegramID := r.Context().Value("telegram_id").(int64)
+
+	user, err := h.service.GetUserByTelegramID(telegramID)
+	if err != nil {
+		log.Printf("Error getting user: %v", err)
+		http.Error(w, "Failed to get user info", http.StatusInternalServerError)
+		return
+	}
+
+	if user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(userData)
+	json.NewEncoder(w).Encode(user)
+}
+
+// Вспомогательные структуры для ответов
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+type SuccessResponse struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+func (h *UserHandler) respondWithError(w http.ResponseWriter, code int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(ErrorResponse{Error: message})
+}
+
+func (h *UserHandler) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(payload)
 }

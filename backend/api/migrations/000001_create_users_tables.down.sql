@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS user_telegram;
+DROP TABLE IF EXISTS users;

@@ -1,38 +1,48 @@
-interface ValidateResponse {
-    user: {
-      id: number;
-      first_name: string;
-      last_name: string;
-      username: string;
-      language_code: string;
-      is_premium: boolean;
-      allows_write_to_pm: boolean;
-      photo_url: string;
-    };
-    auth_date: number;
-    hash: string;
-    // другие поля если нужны
-  }
-  
-  export const api = {
-    async validateUser(initData: string): Promise<ValidateResponse> {
-      try {
-        const response = await fetch('https://api.flippy.toys/api/v1/auth/validate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ init_data: initData }),
-        });
-  
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-  
-        return await response.json();
-      } catch (error) {
-        console.error('Validation error:', error);
-        throw error;
+interface TelegramProfile {
+  id: string;
+  user_id: string;
+  telegram_id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  photo_url: string;
+  language_code: string;
+  is_premium: boolean;
+  phone?: string;
+}
+
+interface User {
+  id: string;
+  display_name: string;
+  email?: string;
+  phone?: string;
+  real_first_name?: string;
+  real_last_name?: string;
+  access_level: string;
+  created_at: string;
+  updated_at: string;
+  telegram_profile: TelegramProfile;
+}
+
+export const api = {
+  async validateUser(initData: string): Promise<User> {
+    try {
+      const response = await fetch('https://api.flippy.toys/api/v1/auth/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ init_data: initData }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Validation error:', error);
+      throw error;
     }
-  };
+  }
+};
