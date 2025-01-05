@@ -70,9 +70,9 @@ func main() {
 	r.HandleFunc("/api/v1/auth/validate", userHandler.ValidateUser).
 		Methods("POST", "OPTIONS")
 
-	// Защищенные маршруты
+		// Защищенные маршруты
 	protected := r.PathPrefix("/api/v1").Subrouter()
-	protected.Use(middleware.TelegramAuth(cfg.BotToken))
+	protected.Use(middleware.TelegramAuth(cfg.BotToken, userService))
 
 	// User routes
 	protected.HandleFunc("/users/me", userHandler.GetMe).
