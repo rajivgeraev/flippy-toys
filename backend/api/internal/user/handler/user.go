@@ -29,13 +29,13 @@ func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
 		InitData string `json:"init_data"`
 	}
 
-	fmt.Printf("Telegram InitData : %s\n", req.InitData)
-
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		log.Printf("Error decoding request: %v", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Printf("Telegram InitData : %s\n", req.InitData)
 
 	user, err := h.service.ProcessTelegramAuth(req.InitData, h.cfg.BotToken)
 	if err != nil {
