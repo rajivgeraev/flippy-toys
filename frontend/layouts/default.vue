@@ -32,6 +32,11 @@
                     <Icon name="lucide:heart" size="24" />
                     <span class="text-xs mt-1">Избранное</span>
                 </NuxtLink>
+                <NuxtLink to="/my-toys" class="flex flex-col items-center"
+                    :class="route.path === '/my-toys' ? 'text-purple-600' : 'text-gray-500'">
+                    <Icon name="lucide:package" size="24" />
+                    <span class="text-xs mt-1">Мои игрушки</span>
+                </NuxtLink>
                 <NuxtLink to="/messages" class="flex flex-col items-center"
                     :class="route.path === '/messages' ? 'text-purple-600' : 'text-gray-500'">
                     <Icon name="lucide:message-circle" size="24" />
