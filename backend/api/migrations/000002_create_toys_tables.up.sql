@@ -20,7 +20,7 @@ CREATE TABLE toys (
     user_id UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    age_range JSONB NOT NULL, -- {"min": 0, "max": 3}
+    age_range JSONB NOT NULL,
     condition toy_condition NOT NULL,
     category toy_category NOT NULL,
     status toy_status DEFAULT 'active',
@@ -42,13 +42,14 @@ CREATE TABLE toy_photos (
     url VARCHAR(500) NOT NULL,
     cloudinary_id VARCHAR(255) NOT NULL,
     is_main BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT unique_main_photo UNIQUE (toy_id, is_main) 
-        WHERE is_main = true
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Создаем уникальный индекс для главного фото
+CREATE UNIQUE INDEX idx_toy_photos_main ON toy_photos (toy_id) WHERE is_main = true;
+
+-- Создаем остальные индексы
 CREATE INDEX idx_toys_user ON toys(user_id);
-CREATE INDEX idx_toys_category ON toys(category) WHERE status = 'active';
-CREATE INDEX idx_toys_status ON toys(status) WHERE is_deleted IS NULL;
-CREATE INDEX idx_toy_photos ON toy_photos(toy_id);
+CREATE INDEX idx_toys_category_active ON toys(category) WHERE status = 'active';
+CREATE INDEX idx_toys_status_not_deleted ON toys(status) WHERE is_deleted IS NULL;
+CREATE INDEX idx_toy_photos_toy ON toy_photos(toy_id);

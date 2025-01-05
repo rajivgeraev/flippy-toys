@@ -4,6 +4,7 @@ package postgres
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
@@ -193,6 +194,9 @@ func (r *ToyRepository) ListActive(limit, offset int) ([]model.Toy, error) {
 }
 
 func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
+	log.Printf("=== Repository: GetByUserID ===")
+	log.Printf("Querying toys for user: %s", userID)
+
 	query := `
         SELECT t.id, t.user_id, t.title, t.description, 
                t.age_range, t.condition, t.category, t.status,
@@ -203,6 +207,7 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 
 	rows, err := r.db.Query(query, userID)
 	if err != nil {
+		log.Printf("Query error: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -234,6 +239,8 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 
 		toys = append(toys, toy)
 	}
+
+	log.Printf("Found %d toys", len(toys))
 
 	return toys, rows.Err()
 }

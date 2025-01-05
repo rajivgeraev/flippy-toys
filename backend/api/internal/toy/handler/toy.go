@@ -111,15 +111,32 @@ func (h *ToyHandler) GetToy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ToyHandler) GetUserToys(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(uuid.UUID)
+	log.Printf("=== GetUserToys Handler ===")
+
+	userID, ok := r.Context().Value("user_id").(uuid.UUID)
+	if !ok {
+		log.Printf("No user_id in context")
+		http.Error(w, "User not found", http.StatusUnauthorized)
+		return
+	}
+	log.Printf("Getting toys for user: %s", userID)
 
 	toys, err := h.service.GetToysByUserID(userID)
 	if err != nil {
-		log.Printf("Error getting user toys: %v", err)
+		log.Printf("Error getting toys: %v", err)
 		http.Error(w, "Failed to get toys", http.StatusInternalServerError)
 		return
 	}
 
+	if toys == nil {
+		log.Printf("No toys found, returning empty array")
+		toys = []model.Toy{}
+	} else {
+		log.Printf("Found %d toys", len(toys))
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(toys)
+	if err := json.NewEncoder(w).Encode(toys); err != nil {
+		log.Printf("Error encoding response: %v", err)
+	}
 }
