@@ -23,11 +23,6 @@ func (r *ToyRepository) DeletePhoto(photoID uuid.UUID) error {
 	panic("unimplemented")
 }
 
-// GetByUserID implements repository.ToyRepository.
-func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
-	panic("unimplemented")
-}
-
 // SetMainPhoto implements repository.ToyRepository.
 func (r *ToyRepository) SetMainPhoto(photoID uuid.UUID) error {
 	panic("unimplemented")
@@ -161,6 +156,52 @@ func (r *ToyRepository) ListActive(limit, offset int) ([]model.Toy, error) {
         LIMIT $1 OFFSET $2`
 
 	rows, err := r.db.Query(query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var toys []model.Toy
+	for rows.Next() {
+		var toy model.Toy
+		var ageRangeJSON []byte
+
+		err := rows.Scan(
+			&toy.ID, &toy.UserID, &toy.Title, &toy.Description,
+			&ageRangeJSON, &toy.Condition, &toy.Category, &toy.Status,
+			&toy.IsDeleted, &toy.CreatedAt, &toy.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(ageRangeJSON, &toy.AgeRange)
+		if err != nil {
+			return nil, err
+		}
+
+		photos, err := r.getPhotos(toy.ID)
+		if err != nil {
+			return nil, err
+		}
+		toy.Photos = photos
+
+		toys = append(toys, toy)
+	}
+
+	return toys, rows.Err()
+}
+
+func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
+	query := `
+        SELECT t.id, t.user_id, t.title, t.description, 
+               t.age_range, t.condition, t.category, t.status,
+               t.is_deleted, t.created_at, t.updated_at
+        FROM toys t
+        WHERE t.user_id = $1 AND t.is_deleted IS NULL
+        ORDER BY t.created_at DESC`
+
+	rows, err := r.db.Query(query, userID)
 	if err != nil {
 		return nil, err
 	}

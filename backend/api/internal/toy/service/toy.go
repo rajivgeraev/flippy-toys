@@ -95,3 +95,7 @@ func (s *ToyService) DeleteToy(ctx context.Context, toyID uuid.UUID) error {
 
 	return s.repo.SoftDelete(toyID)
 }
+
+func (s *ToyService) GetToysByUserID(userID uuid.UUID) ([]model.Toy, error) {
+	return s.repo.GetByUserID(userID)
+}

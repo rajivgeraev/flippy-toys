@@ -85,6 +85,8 @@ func main() {
 		Methods("POST", "OPTIONS")
 	protected.HandleFunc("/toys/{id}", toysHandler.GetToy).
 		Methods("GET", "OPTIONS")
+	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
+		Methods("GET", "OPTIONS")
 
 	// Запуск сервера
 	port := ":" + cfg.Port

@@ -3,6 +3,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -107,4 +108,18 @@ func (h *ToyHandler) GetToy(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(toy)
+}
+
+func (h *ToyHandler) GetUserToys(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("user_id").(uuid.UUID)
+
+	toys, err := h.service.GetToysByUserID(userID)
+	if err != nil {
+		log.Printf("Error getting user toys: %v", err)
+		http.Error(w, "Failed to get toys", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(toys)
 }

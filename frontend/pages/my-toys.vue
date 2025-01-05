@@ -36,33 +36,42 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { api } from '~/services/api';
+import { telegram } from '~/composables/useTelegram';
 
-const router = useRouter()
-const toys = ref([])
-const loading = ref(true)
+const router = useRouter();
+const toys = ref([]);
+const loading = ref(true);
 
 const fetchToys = async () => {
     try {
-        const response = await fetch('https://api.flippy.toys/api/v1/toys/my', {
-            headers: {
-                'X-Telegram-Init-Data': window.Telegram.WebApp.initData
-            }
-        })
-        toys.value = await response.json()
+        // Ждем инициализации
+        if (!telegram.isInitialized.value) {
+            await new Promise(resolve => {
+                const unwatch = watch(telegram.isInitialized, (newValue) => {
+                    if (newValue) {
+                        unwatch();
+                        resolve(true);
+                    }
+                });
+            });
+        }
+
+        toys.value = await api.getUserToys();
     } catch (error) {
-        console.error('Failed to fetch toys:', error)
+        console.error('Failed to fetch toys:', error);
     } finally {
-        loading.value = false
+        loading.value = false;
     }
-}
+};
 
 const navigateToAdd = () => {
-    router.push('/toys/add')
-}
+    router.push('/toys/add');
+};
 
 onMounted(() => {
-    fetchToys()
-})
+    fetchToys();
+});
 </script>
