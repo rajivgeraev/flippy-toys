@@ -58,9 +58,9 @@ const useGlobalTelegram = () => {
           });
 
           if (webApp.value.initDataUnsafe?.user) {
-            const validationResult = await api.validateUser(webApp.value.initData);
+            const userData = await api.validateUser(webApp.value.initData);
 
-            user.value = validationResult.user;
+            user.value = userData;
             // user.value = webApp.value.initDataUnsafe.user;
             isInitialized.value = true;
 
