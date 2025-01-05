@@ -3,14 +3,16 @@ package config
 import "os"
 
 type Config struct {
-	BotToken string
-	Port     string
+	BotToken    string
+	Port        string
+	DatabaseURL string
 }
 
 func LoadConfig() *Config {
 	return &Config{
-		BotToken: getEnvOrDefault("BOT_TOKEN", ""),
-		Port:     getEnvOrDefault("PORT", "8080"),
+		BotToken:    getEnvOrDefault("BOT_TOKEN", ""),
+		Port:        getEnvOrDefault("PORT", "8080"),
+		DatabaseURL: getEnvOrDefault("DATABASE_URL", ""),
 	}
 }
 
