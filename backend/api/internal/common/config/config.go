@@ -6,6 +6,10 @@ type Config struct {
 	BotToken    string
 	Port        string
 	DatabaseURL string
+
+	CloudinaryName   string
+	CloudinaryKey    string
+	CloudinarySecret string
 }
 
 func LoadConfig() *Config {
@@ -13,6 +17,10 @@ func LoadConfig() *Config {
 		BotToken:    getEnvOrDefault("BOT_TOKEN", ""),
 		Port:        getEnvOrDefault("PORT", "8080"),
 		DatabaseURL: getEnvOrDefault("DATABASE_URL", ""),
+
+		CloudinaryName:   getEnvOrDefault("CLOUDINARY_CLOUD_NAME", ""),
+		CloudinaryKey:    getEnvOrDefault("CLOUDINARY_API_KEY", ""),
+		CloudinarySecret: getEnvOrDefault("CLOUDINARY_API_SECRET", ""),
 	}
 }
 

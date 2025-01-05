@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS toy_photos;
+DROP TABLE IF EXISTS toys;
+DROP TYPE IF EXISTS toy_condition;
+DROP TYPE IF EXISTS toy_status;
+DROP TYPE IF EXISTS toy_category;
