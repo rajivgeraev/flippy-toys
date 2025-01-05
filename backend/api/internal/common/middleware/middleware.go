@@ -3,6 +3,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -40,26 +41,36 @@ func Logger(next http.Handler) http.Handler {
 func TelegramAuth(botToken string, userService UserService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Printf("=== TelegramAuth Middleware ===")
+			fmt.Printf("Request URL: %s", r.URL.Path)
+			fmt.Printf("Request Method: %s", r.Method)
+
 			initData := r.Header.Get("X-Telegram-Init-Data")
 			if initData == "" {
+				fmt.Printf("No auth data provided")
 				http.Error(w, "No auth data provided", http.StatusUnauthorized)
 				return
 			}
 
 			telegramData, err := telegram.ValidateInitData(initData, botToken)
 			if err != nil {
+				fmt.Printf("Invalid auth data: %v", err)
 				http.Error(w, "Invalid auth data", http.StatusUnauthorized)
 				return
 			}
 
-			// Получаем пользователя из БД по telegram_id
+			fmt.Printf("Telegram User ID: %d", telegramData.User.ID)
+
+			// Получаем пользователя из БД
 			user, err := userService.GetUserByTelegramID(telegramData.User.ID)
 			if err != nil {
+				fmt.Printf("Error getting user: %v", err)
 				http.Error(w, "User not found", http.StatusUnauthorized)
 				return
 			}
 
-			// Добавляем оба ID в контекст
+			fmt.Printf("User UUID: %s", user.ID)
+
 			ctx := context.WithValue(r.Context(), "telegram_id", telegramData.User.ID)
 			ctx = context.WithValue(ctx, "user_id", user.ID)
 
