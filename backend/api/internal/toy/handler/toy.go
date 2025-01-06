@@ -112,7 +112,7 @@ func (h *ToyHandler) GetToy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ToyHandler) GetUserToys(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("=== GetUserToys Handler ===\n")
+	fmt.Printf(">>==GetUserToys Start : %s\n", "userID")
 
 	userID, ok := r.Context().Value("user_id").(uuid.UUID)
 	if !ok {

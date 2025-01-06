@@ -49,11 +49,11 @@ func main() {
 
 	// Инициализация репозиториев
 	userRepo := postgres.NewUserRepository(db)
-	toyRepository := toyRepo.NewToyRepository(db)
+	toyRepo := toyRepo.NewToyRepository(db)
 
 	// Инициализация сервисов
 	userService := service.NewUserService(userRepo)
-	toyService := toyService.NewToyService(toyRepository, cloudinaryClient)
+	toyService := toyService.NewToyService(toyRepo, cloudinaryClient)
 
 	// Инициализация хендлеров
 	userHandler := handler.NewUserHandler(cfg, userService)
@@ -70,7 +70,7 @@ func main() {
 	r.HandleFunc("/api/v1/auth/validate", userHandler.ValidateUser).
 		Methods("POST", "OPTIONS")
 
-		// Защищенные маршруты
+	// Защищенные маршруты
 	protected := r.PathPrefix("/api/v1").Subrouter()
 	protected.Use(middleware.TelegramAuth(cfg.BotToken, userService))
 
@@ -83,7 +83,7 @@ func main() {
 	// Toy routes
 	protected.HandleFunc("/toys", toysHandler.CreateToy).
 		Methods("POST", "OPTIONS")
-	protected.HandleFunc("/toys/{id}", toysHandler.GetToy).
+	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
 		Methods("GET", "OPTIONS")

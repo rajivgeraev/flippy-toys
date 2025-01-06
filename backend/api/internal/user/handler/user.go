@@ -75,6 +75,8 @@ func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	// Получаем telegram_id из контекста (установленного middleware)
 	telegramID := r.Context().Value("telegram_id").(int64)
 
+	fmt.Printf("GetToysByUserID Start : %s\n", "telegramID")
+
 	user, err := h.service.GetUserByTelegramID(telegramID)
 	if err != nil {
 		log.Printf("Error getting user: %v", err)
