@@ -144,6 +144,7 @@
 import { ref } from 'vue'
 import { Form, Field } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import { api } from '~/services/api'
 import * as yup from 'yup'
 
 const router = useRouter()
