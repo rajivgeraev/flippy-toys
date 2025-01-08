@@ -23,11 +23,12 @@
 
         <div v-else class="grid grid-cols-2 gap-4">
             <div v-for="toy in toys" :key="toy.id" class="bg-white rounded-lg shadow overflow-hidden">
-                <img :src="toy.photos[0]?.url || '/placeholder.jpg'" class="w-full h-32 object-cover" />
+                <img :src="toy.photos && toy.photos.length > 0 ? toy.photos[0].url : '/placeholder.jpg'"
+                    class="w-full h-32 object-cover" />
                 <div class="p-3">
                     <h3 class="font-medium text-sm mb-1">{{ toy.title }}</h3>
                     <p class="text-gray-500 text-xs">
-                        {{ toy.age_range.min }}-{{ toy.age_range.max }} лет
+                        {{ toy.age_range?.min ?? 0 }}-{{ toy.age_range?.max ?? '+' }} лет
                     </p>
                 </div>
             </div>
