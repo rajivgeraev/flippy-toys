@@ -17,7 +17,13 @@ import (
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/service"
 )
 
-var emptyHandleFunc = func(w http.ResponseWriter, r *http.Request) {}
+var HandleOptionsCors = func(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "https://app.flippy.toys")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Telegram-Init-Data")
+	w.WriteHeader(http.StatusOK)
+}
 
 func main() {
 	// Загрузка конфигурации
@@ -88,12 +94,12 @@ func main() {
 	// Toy routes
 	protected.HandleFunc("/toys", toysHandler.CreateToy).
 		Methods("POST", "OPTIONS")
-	protected.HandleFunc("/toys/id/{id}", emptyHandleFunc).
-		Methods("OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
 		Methods("PUT")
+	protected.HandleFunc("/toys/id/{id}", HandleOptionsCors).
+		Methods("OPTIONS")
 
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
 		Methods("GET", "OPTIONS")

@@ -130,7 +130,8 @@ export const api = {
         'Content-Type': 'application/json',
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      credentials: 'include' // ВАЖНО!
     });
 
     if (!response.ok) {
