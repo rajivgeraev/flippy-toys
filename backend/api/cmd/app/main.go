@@ -17,6 +17,8 @@ import (
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/service"
 )
 
+var emptyHandleFunc = func(w http.ResponseWriter, r *http.Request) {}
+
 func main() {
 	// Загрузка конфигурации
 	cfg := config.LoadConfig()
@@ -86,8 +88,10 @@ func main() {
 	// Toy routes
 	protected.HandleFunc("/toys", toysHandler.CreateToy).
 		Methods("POST", "OPTIONS")
+	protected.HandleFunc("/toys/id/{id}", emptyHandleFunc).
+		Methods("OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
-		Methods("GET", "OPTIONS")
+		Methods("GET")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
 		Methods("PUT")
 
