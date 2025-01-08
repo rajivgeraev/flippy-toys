@@ -25,7 +25,8 @@
                 <label class="block text-sm font-medium text-gray-700">Фотографии</label>
                 <div class="grid grid-cols-3 gap-4 mt-2">
                     <div v-for="photo in toy.photos" :key="photo.id" class="aspect-square rounded-lg overflow-hidden">
-                        <img :src="photo.url" class="w-full h-full object-cover" :alt="toy.title" />
+                        <img :src="getOptimizedImageUrl(photo.url, 300, 300)" class="w-full h-full object-cover"
+                            :alt="toy.title" />
                     </div>
                 </div>
             </div>
@@ -101,6 +102,16 @@ const isSaving = ref(false);
 const hasChanges = computed(() => {
     return JSON.stringify(toy.value) !== JSON.stringify(originalToy.value);
 });
+
+const getOptimizedImageUrl = (url, width = 300, height = 300) => {
+    if (!url) return '/placeholder.jpg'; // Возвращаем заглушку, если фото отсутствует
+
+    const parts = url.split('/upload/');
+    if (parts.length < 2) return url; // Если URL не Cloudinary, возвращаем как есть
+
+    // Генерируем оптимизированный URL с параметрами:
+    return `${parts[0]}/upload/w_${width},h_${height},c_fill,q_auto,f_auto/${parts[1]}`;
+};
 
 // Загрузка данных игрушки
 const fetchToy = async () => {
