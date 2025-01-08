@@ -88,5 +88,21 @@ export const api = {
     }
 
     return response.json();
+  },
+
+  async getUserToys(data: CreateToyRequest): Promise<any> {
+    const response = await fetch('https://api.flippy.toys/api/v1/toys/my', {
+      method: 'GET',
+      headers: {
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create toy');
+    }
+
+    return response.json();
   }
 };
