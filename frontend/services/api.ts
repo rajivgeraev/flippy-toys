@@ -124,18 +124,18 @@ export const api = {
   },
 
   async updateToy(id: string, data: any): Promise<any> {
-    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
-      method: 'PUT',
+    const response = await fetch(`${BASE_URL}/toys/id/${id}/update`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
       },
       body: JSON.stringify(data),
-      credentials: 'include' // ВАЖНО!
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update toy');
+      const errorText = await response.text();
+      throw new Error(`Ошибка сервера: ${errorText}`);
     }
 
     return response.json();

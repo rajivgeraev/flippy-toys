@@ -94,12 +94,13 @@ func main() {
 	// Toy routes
 	protected.HandleFunc("/toys", toysHandler.CreateToy).
 		Methods("POST", "OPTIONS")
+
+	protected.HandleFunc("/toys/id/{id}", HandleOptionsCors).
+		Methods("OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
-		Methods("PUT")
-	protected.HandleFunc("/toys/id/{id}", HandleOptionsCors).
-		Methods("OPTIONS")
+		Methods("POST")
 
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
 		Methods("GET", "OPTIONS")

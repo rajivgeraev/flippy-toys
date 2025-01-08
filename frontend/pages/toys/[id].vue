@@ -86,6 +86,7 @@ const toggleEdit = () => {
 // Сохранение изменений
 const saveToy = async () => {
     try {
+        console.log('Отправка данных для обновления:', toy.value);
         await api.updateToy(route.params.id, toy.value);
         isEditing.value = false;
     } catch (error) {
