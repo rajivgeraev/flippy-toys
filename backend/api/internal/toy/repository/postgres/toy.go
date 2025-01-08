@@ -163,6 +163,13 @@ func (r *ToyRepository) GetByID(id uuid.UUID) (*model.Toy, error) {
 		toy.Category = &c
 	}
 
+	// Загружаем фотографии
+	photos, err := r.getPhotos(toy.ID)
+	if err != nil {
+		return nil, err
+	}
+	toy.Photos = photos
+
 	return toy, nil
 }
 
