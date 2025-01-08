@@ -16,7 +16,7 @@
                 <div class="grid grid-cols-3 gap-2 mb-2">
                     <div v-for="(preview, index) in previews" :key="index" class="relative aspect-square">
                         <img :src="preview" class="w-full h-full object-cover rounded-lg" />
-                        <button @click="removePhoto(index)"
+                        <button @click="removePhoto(index)" type="button"
                             class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1">
                             <Icon name="lucide:x" size="16" />
                         </button>
@@ -60,33 +60,6 @@
                 </Field>
             </div>
 
-            <!-- Age Range -->
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Возраст
-                </label>
-                <div class="flex gap-4">
-                    <Field name="ageMin" v-slot="{ field, errors }">
-                        <div class="flex-1">
-                            <input type="number" v-bind="field" placeholder="От"
-                                class="w-full px-3 py-2 border rounded-lg" :class="{ 'border-red-500': errors }" />
-                            <p v-if="errors" class="mt-1 text-sm text-red-500">
-                                {{ errors }}
-                            </p>
-                        </div>
-                    </Field>
-                    <Field name="ageMax" v-slot="{ field, errors }">
-                        <div class="flex-1">
-                            <input type="number" v-bind="field" placeholder="До"
-                                class="w-full px-3 py-2 border rounded-lg" :class="{ 'border-red-500': errors }" />
-                            <p v-if="errors" class="mt-1 text-sm text-red-500">
-                                {{ errors }}
-                            </p>
-                        </div>
-                    </Field>
-                </div>
-            </div>
-
             <!-- Condition -->
             <div class="mb-6">
                 <Field name="condition" v-slot="{ field, errors }">
@@ -95,6 +68,7 @@
                     </label>
                     <select v-bind="field" class="w-full px-3 py-2 border rounded-lg"
                         :class="{ 'border-red-500': errors }">
+                        <option value="">Выберите состояние</option>
                         <option value="new">Новое</option>
                         <option value="like_new">Как новое</option>
                         <option value="good">Хорошее</option>
@@ -114,6 +88,7 @@
                     </label>
                     <select v-bind="field" class="w-full px-3 py-2 border rounded-lg"
                         :class="{ 'border-red-500': errors }">
+                        <option value="">Выберите категорию</option>
                         <option value="construction_toys">Конструктор</option>
                         <option value="dolls">Куклы</option>
                         <option value="vehicles">Машинки</option>
@@ -133,74 +108,80 @@
                 </Field>
             </div>
 
-            <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-medium">
-                Добавить игрушку
+            <button type="submit" :disabled="loading"
+                class="w-full bg-purple-600 text-white py-3 rounded-lg font-medium disabled:bg-purple-400">
+                {{ loading ? 'Загрузка...' : 'Добавить игрушку' }}
             </button>
         </Form>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Form, Field } from 'vee-validate'
-import { useRouter } from 'vue-router'
-import { api } from '~/services/api'
-import * as yup from 'yup'
+import { ref } from 'vue';
+import { Form, Field } from 'vee-validate';
+import { useRouter } from 'vue-router';
+import * as yup from 'yup';
+import { api } from '~/services/api';
+import { uploadService } from '~/services/upload';
 
-const router = useRouter()
-const previews = ref([])
-const photos = ref([])
+const router = useRouter();
+const loading = ref(false);
+const previews = ref([]);
+const files = ref([]);
 
 const schema = yup.object({
     title: yup.string().required('Введите название'),
     description: yup.string().required('Добавьте описание'),
-    ageMin: yup.number()
-        .required('Укажите минимальный возраст')
-        .min(0, 'Минимальный возраст не может быть отрицательным'),
-    ageMax: yup.number()
-        .required('Укажите максимальный возраст')
-        .min(yup.ref('ageMin'), 'Максимальный возраст должен быть больше минимального'),
     condition: yup.string().required('Выберите состояние'),
-    category: yup.string().required('Выберите категорию'),
-    photos: yup.array()
-        .min(1, 'Добавьте хотя бы одно фото')
-        .max(5, 'Максимум 5 фотографий')
-})
+    category: yup.string().required('Выберите категорию')
+});
 
 const onPhotoSelected = (event) => {
-    const files = Array.from(event.target.files)
-    files.forEach(file => {
-        if (previews.value.length >= 5) return
+    const selectedFiles = Array.from(event.target.files);
+    selectedFiles.forEach(file => {
+        if (files.value.length >= 5) return;
 
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onload = (e) => {
-            previews.value.push(e.target.result)
-            photos.value.push(file)
-        }
-        reader.readAsDataURL(file)
-    })
-}
+            previews.value.push(e.target.result);
+            files.value.push(file);
+        };
+        reader.readAsDataURL(file);
+    });
+};
 
 const removePhoto = (index) => {
-    previews.value.splice(index, 1)
-    photos.value.splice(index, 1)
-}
+    previews.value.splice(index, 1);
+    files.value.splice(index, 1);
+};
 
 const onSubmit = async (values) => {
     try {
-        await api.createToy({
+        loading.value = true;
+
+        if (files.value.length === 0) {
+            throw new Error('Добавьте хотя бы одну фотографию');
+        }
+
+        // Загружаем фотографии
+        const uploadedPhotos = await uploadService.uploadMultiple(files.value);
+
+        // Создаем игрушку
+        const toyData = {
             title: values.title,
             description: values.description,
-            age_min: values.ageMin,
-            age_max: values.ageMax,
             condition: values.condition,
             category: values.category,
-            photos: photos.value
-        });
+            photos: uploadedPhotos
+        };
+
+        await api.createToy(toyData);
         router.push('/my-toys');
     } catch (error) {
         console.error('Error creating toy:', error);
+        // Здесь можно добавить уведомление об ошибке
+    } finally {
+        loading.value = false;
     }
-}
-
+};
 </script>

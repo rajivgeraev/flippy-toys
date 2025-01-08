@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -23,23 +24,30 @@ func NewToyHandler(service *service.ToyService) *ToyHandler {
 }
 
 func (h *ToyHandler) CreateToy(w http.ResponseWriter, r *http.Request) {
-	// Получаем multipart form с фотографиями
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
 
+	log.Printf("Received form data: %+v", r.MultipartForm.Value)
+
 	var input struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		AgeMin      int    `json:"age_min"`
-		AgeMax      int    `json:"age_max"`
-		Condition   string `json:"condition"`
-		Category    string `json:"category"`
+		Title       string  `json:"title"`
+		Description string  `json:"description"`
+		AgeMin      *int    `json:"age_min,omitempty"`
+		AgeMax      *int    `json:"age_max,omitempty"`
+		Condition   *string `json:"condition,omitempty"`
+		Category    *string `json:"category,omitempty"`
 	}
 
 	if err := json.Unmarshal([]byte(r.MultipartForm.Value["data"][0]), &input); err != nil {
 		http.Error(w, "Invalid input data", http.StatusBadRequest)
+		return
+	}
+
+	// Валидация обязательных полей
+	if input.Title == "" {
+		http.Error(w, "Title is required", http.StatusBadRequest)
 		return
 	}
 
@@ -63,23 +71,41 @@ func (h *ToyHandler) CreateToy(w http.ResponseWriter, r *http.Request) {
 		photos = append(photos, photoData)
 	}
 
-	// Получаем пользователя из контекста
 	userID := r.Context().Value("user_id").(uuid.UUID)
 
-	toy, err := h.service.CreateToy(r.Context(), service.CreateToyInput{
+	// Создаем input для сервиса
+	createInput := service.CreateToyInput{
 		UserID:      userID,
 		Title:       input.Title,
 		Description: input.Description,
-		AgeRange: model.AgeRange{
-			Min: input.AgeMin,
-			Max: input.AgeMax,
-		},
-		Condition: model.ToyCondition(input.Condition),
-		Category:  model.ToyCategory(input.Category),
-		Photos:    photos,
-	})
+		Photos:      photos,
+	}
 
+	fmt.Printf("\n>>== createInput : %+v\n", createInput)
+
+	// Добавляем опциональные поля если они есть
+	if input.AgeMin != nil && input.AgeMax != nil {
+		createInput.AgeRange = &model.AgeRange{
+			Min: *input.AgeMin,
+			Max: *input.AgeMax,
+		}
+	}
+
+	if input.Condition != nil {
+		condition := model.ToyCondition(*input.Condition)
+		createInput.Condition = &condition
+	}
+
+	if input.Category != nil {
+		category := model.ToyCategory(*input.Category)
+		createInput.Category = &category
+	}
+	fmt.Printf(">>== Start  1: %s\n", "userID")
+
+	toy, err := h.service.CreateToy(r.Context(), createInput)
 	if err != nil {
+		fmt.Printf("\n>>== Error : %w\n", err)
+
 		http.Error(w, "Failed to create toy", http.StatusInternalServerError)
 		return
 	}
@@ -140,4 +166,45 @@ func (h *ToyHandler) GetUserToys(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(toys); err != nil {
 		log.Printf("Error encoding response: %v", err)
 	}
+}
+
+func (h *ToyHandler) ListActive(w http.ResponseWriter, r *http.Request) {
+	// Получаем параметры пагинации
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	pageSize, _ := strconv.Atoi(r.URL.Query().Get("pageSize"))
+
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 50 {
+		pageSize = 20
+	}
+
+	toys, err := h.service.ListToys(r.Context(), page, pageSize)
+	if err != nil {
+		log.Printf("Error listing toys: %v", err)
+		http.Error(w, "Failed to list toys", http.StatusInternalServerError)
+		return
+	}
+
+	if toys == nil {
+		toys = []model.Toy{} // Возвращаем пустой массив вместо nil
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(toys)
+}
+
+func (h *ToyHandler) GetUploadParams(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	params, err := h.service.GetUploadParams(ctx)
+	if err != nil {
+		log.Printf("Error getting upload params: %v", err)
+		http.Error(w, "Failed to get upload parameters", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(params)
 }

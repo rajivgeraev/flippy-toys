@@ -3,24 +3,24 @@ package config
 import "os"
 
 type Config struct {
-	BotToken    string
-	Port        string
-	DatabaseURL string
-
-	CloudinaryName   string
-	CloudinaryKey    string
-	CloudinarySecret string
+	BotToken               string
+	Port                   string
+	DatabaseURL            string
+	CloudinaryName         string
+	CloudinaryApiKey       string
+	CloudinaryApiSecret    string
+	CloudinaryUploadPreset string
 }
 
 func LoadConfig() *Config {
 	return &Config{
-		BotToken:    getEnvOrDefault("BOT_TOKEN", ""),
-		Port:        getEnvOrDefault("PORT", "8080"),
-		DatabaseURL: getEnvOrDefault("DATABASE_URL", ""),
-
-		CloudinaryName:   getEnvOrDefault("CLOUDINARY_CLOUD_NAME", ""),
-		CloudinaryKey:    getEnvOrDefault("CLOUDINARY_API_KEY", ""),
-		CloudinarySecret: getEnvOrDefault("CLOUDINARY_API_SECRET", ""),
+		BotToken:               getEnvOrDefault("BOT_TOKEN", ""),
+		Port:                   getEnvOrDefault("PORT", "8080"),
+		DatabaseURL:            getEnvOrDefault("DATABASE_URL", ""),
+		CloudinaryName:         getEnvOrDefault("CLOUDINARY_CLOUD_NAME", ""),
+		CloudinaryApiKey:       getEnvOrDefault("CLOUDINARY_API_KEY", ""),
+		CloudinaryApiSecret:    getEnvOrDefault("CLOUDINARY_API_SECRET", ""),
+		CloudinaryUploadPreset: getEnvOrDefault("CLOUDINARY_UPLOAD_PRESET", ""),
 	}
 }
 

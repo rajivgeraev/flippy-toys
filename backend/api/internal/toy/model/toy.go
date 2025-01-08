@@ -41,18 +41,18 @@ type AgeRange struct {
 }
 
 type Toy struct {
-	ID          uuid.UUID    `json:"id"`
-	UserID      uuid.UUID    `json:"user_id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	AgeRange    AgeRange     `json:"age_range"`
-	Condition   ToyCondition `json:"condition"`
-	Category    ToyCategory  `json:"category"`
-	Status      ToyStatus    `json:"status"`
-	Photos      []Photo      `json:"photos,omitempty"`
-	IsDeleted   *time.Time   `json:"is_deleted,omitempty"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	ID          uuid.UUID     `json:"id"`
+	UserID      uuid.UUID     `json:"user_id"`
+	Title       string        `json:"title"`
+	Description string        `json:"description"`
+	AgeRange    *AgeRange     `json:"age_range,omitempty"`
+	Condition   *ToyCondition `json:"condition,omitempty"`
+	Category    *ToyCategory  `json:"category,omitempty"`
+	Status      ToyStatus     `json:"status"`
+	Photos      []Photo       `json:"photos,omitempty"`
+	IsDeleted   *time.Time    `json:"is_deleted,omitempty"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 type Photo struct {

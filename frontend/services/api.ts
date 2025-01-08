@@ -26,12 +26,29 @@ interface User {
 
 interface ToyCreate {
   title: string;
-  description: string;
-  age_min: number;
-  age_max: number;
-  condition: string;
-  category: string;
-  photos: File[];
+  description?: string;
+  age_min?: number;
+  age_max?: number;
+  condition?: string;
+  category?: string;
+  photos?: File[];
+}
+
+
+interface PhotoData {
+  secure_url: string;
+  public_id: string;
+  asset_id: string;
+}
+
+interface CreateToyRequest {
+  title: string;
+  description?: string;
+  age_min?: number;
+  age_max?: number;
+  condition?: string;
+  category?: string;
+  photos: PhotoData[];
 }
 
 export const api = {
@@ -56,27 +73,14 @@ export const api = {
     }
   },
 
-  async createToy(data: ToyCreate): Promise<any> {
-    const formData = new FormData();
-    formData.append('data', JSON.stringify({
-      title: data.title,
-      description: data.description,
-      age_min: data.age_min,
-      age_max: data.age_max,
-      condition: data.condition,
-      category: data.category
-    }));
-
-    data.photos.forEach(photo => {
-      formData.append('photos', photo);
-    });
-
+  async createToy(data: CreateToyRequest): Promise<any> {
     const response = await fetch('https://api.flippy.toys/api/v1/toys', {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
       },
-      body: formData
+      body: JSON.stringify(data)
     });
 
     if (!response.ok) {
@@ -84,20 +88,5 @@ export const api = {
     }
 
     return response.json();
-  },
-
-  async getUserToys(): Promise<any> {
-    const response = await fetch('https://api.flippy.toys/api/v1/toys/my', {
-      headers: {
-        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch toys');
-    }
-
-    return response.json();
   }
-
 };

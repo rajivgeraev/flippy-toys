@@ -50,16 +50,12 @@ func (r *ToyRepository) Create(toy *model.Toy) error {
 	}
 	defer tx.Rollback()
 
-	ageRange, err := json.Marshal(toy.AgeRange)
-	if err != nil {
-		return err
-	}
+	fmt.Printf("Creating toy: %+v", toy)
 
 	query := `
         INSERT INTO toys (
-            user_id, title, description, age_range,
-            condition, category, status
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+            user_id, title, description
+        ) VALUES ($1, $2, $3)
         RETURNING id, created_at, updated_at`
 
 	err = tx.QueryRow(
@@ -67,13 +63,9 @@ func (r *ToyRepository) Create(toy *model.Toy) error {
 		toy.UserID,
 		toy.Title,
 		toy.Description,
-		ageRange,
-		toy.Condition,
-		toy.Category,
-		toy.Status,
 	).Scan(&toy.ID, &toy.CreatedAt, &toy.UpdatedAt)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to insert toy: %w", err)
 	}
 
 	return tx.Commit()
@@ -89,12 +81,18 @@ func (r *ToyRepository) GetByID(id uuid.UUID) (*model.Toy, error) {
         FROM toys t
         WHERE t.id = $1 AND t.is_deleted IS NULL`
 
-	var ageRangeJSON []byte
+	var (
+		ageRangeJSON []byte
+		condition    *string // Используем указатели
+		category     *string
+	)
+
 	err := r.db.QueryRow(query, id).Scan(
 		&toy.ID, &toy.UserID, &toy.Title, &toy.Description,
-		&ageRangeJSON, &toy.Condition, &toy.Category, &toy.Status,
+		&ageRangeJSON, &condition, &category, &toy.Status,
 		&toy.IsDeleted, &toy.CreatedAt, &toy.UpdatedAt,
 	)
+
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -102,17 +100,23 @@ func (r *ToyRepository) GetByID(id uuid.UUID) (*model.Toy, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(ageRangeJSON, &toy.AgeRange)
-	if err != nil {
-		return nil, err
+	if ageRangeJSON != nil {
+		var ageRange model.AgeRange
+		if err := json.Unmarshal(ageRangeJSON, &ageRange); err != nil {
+			return nil, err
+		}
+		toy.AgeRange = &ageRange
 	}
 
-	// Получаем фотографии
-	photos, err := r.getPhotos(toy.ID)
-	if err != nil {
-		return nil, err
+	if condition != nil {
+		c := model.ToyCondition(*condition)
+		toy.Condition = &c
 	}
-	toy.Photos = photos
+
+	if category != nil {
+		c := model.ToyCategory(*category)
+		toy.Category = &c
+	}
 
 	return toy, nil
 }
@@ -194,9 +198,6 @@ func (r *ToyRepository) ListActive(limit, offset int) ([]model.Toy, error) {
 }
 
 func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
-	fmt.Printf("=== Repository: GetByUserID ===\n")
-	fmt.Printf("Querying toys for user: %s\n", userID)
-
 	query := `
         SELECT t.id, t.user_id, t.title, t.description, 
                t.age_range, t.condition, t.category, t.status,
@@ -207,7 +208,6 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 
 	rows, err := r.db.Query(query, userID)
 	if err != nil {
-		fmt.Printf("Query error: %v\n", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -215,32 +215,41 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 	var toys []model.Toy
 	for rows.Next() {
 		var toy model.Toy
-		var ageRangeJSON []byte
+		var (
+			ageRangeJSON []byte
+			condition    *string
+			category     *string
+		)
 
 		err := rows.Scan(
 			&toy.ID, &toy.UserID, &toy.Title, &toy.Description,
-			&ageRangeJSON, &toy.Condition, &toy.Category, &toy.Status,
+			&ageRangeJSON, &condition, &category, &toy.Status,
 			&toy.IsDeleted, &toy.CreatedAt, &toy.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		err = json.Unmarshal(ageRangeJSON, &toy.AgeRange)
-		if err != nil {
-			return nil, err
+		if ageRangeJSON != nil {
+			var ageRange model.AgeRange
+			if err := json.Unmarshal(ageRangeJSON, &ageRange); err != nil {
+				return nil, err
+			}
+			toy.AgeRange = &ageRange
 		}
 
-		photos, err := r.getPhotos(toy.ID)
-		if err != nil {
-			return nil, err
+		if condition != nil {
+			c := model.ToyCondition(*condition)
+			toy.Condition = &c
 		}
-		toy.Photos = photos
+
+		if category != nil {
+			c := model.ToyCategory(*category)
+			toy.Category = &c
+		}
 
 		toys = append(toys, toy)
 	}
-
-	fmt.Printf("Found %d toys\n", len(toys))
 
 	return toys, rows.Err()
 }

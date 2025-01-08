@@ -26,7 +26,7 @@ func main() {
 	if cfg.DatabaseURL == "" {
 		log.Fatal("DATABASE_URL is required")
 	}
-	if cfg.CloudinaryName == "" || cfg.CloudinaryKey == "" || cfg.CloudinarySecret == "" {
+	if cfg.CloudinaryName == "" || cfg.CloudinaryApiKey == "" || cfg.CloudinaryApiSecret == "" || cfg.CloudinaryUploadPreset == "" {
 		log.Fatal("Cloudinary configuration is required")
 	}
 
@@ -37,12 +37,15 @@ func main() {
 	}
 	defer db.Close()
 
-	// Инициализация Cloudinary
-	cloudinaryClient, err := cloudinary.NewClient(
+	cloudinaryConfig := cloudinary.NewConfig(
 		cfg.CloudinaryName,
-		cfg.CloudinaryKey,
-		cfg.CloudinarySecret,
+		cfg.CloudinaryApiKey,
+		cfg.CloudinaryApiSecret,
+		cfg.CloudinaryUploadPreset,
 	)
+
+	// Инициализация Cloudinary
+	cloudinaryClient, err := cloudinary.NewClient(cloudinaryConfig)
 	if err != nil {
 		log.Fatalf("Failed to initialize Cloudinary: %v", err)
 	}
@@ -86,6 +89,9 @@ func main() {
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
+		Methods("GET", "OPTIONS")
+
+	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).
 		Methods("GET", "OPTIONS")
 
 	// Запуск сервера

@@ -3,6 +3,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/cloudinary"
@@ -19,10 +20,10 @@ type CreateToyInput struct {
 	UserID      uuid.UUID
 	Title       string
 	Description string
-	AgeRange    model.AgeRange
-	Condition   model.ToyCondition
-	Category    model.ToyCategory
-	Photos      [][]byte // бинарные данные фотографий
+	AgeRange    *model.AgeRange
+	Condition   *model.ToyCondition
+	Category    *model.ToyCategory
+	Photos      [][]byte
 }
 
 func NewToyService(repo repository.ToyRepository, storage *cloudinary.Client) *ToyService {
@@ -43,7 +44,10 @@ func (s *ToyService) CreateToy(ctx context.Context, input CreateToyInput) (*mode
 		Status:      model.StatusActive,
 	}
 
+	fmt.Printf("\n>>== Toy : %+v\n", toy)
+
 	if err := s.repo.Create(toy); err != nil {
+		fmt.Printf("\n>>== Error 1 : %w\n", err)
 		return nil, err
 	}
 
@@ -98,4 +102,12 @@ func (s *ToyService) DeleteToy(ctx context.Context, toyID uuid.UUID) error {
 
 func (s *ToyService) GetToysByUserID(userID uuid.UUID) ([]model.Toy, error) {
 	return s.repo.GetByUserID(userID)
+}
+
+func (s *ToyService) GetUploadParams(ctx context.Context) (*cloudinary.UploadParams, error) {
+	params, err := s.storage.GetUploadParams()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get upload params: %w", err)
+	}
+	return params, nil
 }

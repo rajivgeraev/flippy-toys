@@ -20,36 +20,21 @@ CREATE TABLE toys (
     user_id UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    age_range JSONB NOT NULL,
-    condition toy_condition NOT NULL,
-    category toy_category NOT NULL,
+    age_range JSONB,
+    condition toy_condition,
+    category toy_category,
     status toy_status DEFAULT 'active',
     is_deleted TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
+    -- Изменяем проверку age_range, учитывая что поле может быть NULL
     CONSTRAINT valid_age_range CHECK (
-        age_range ? 'min' AND 
-        age_range ? 'max' AND 
-        (age_range->>'min')::int >= 0 AND 
-        (age_range->>'max')::int >= (age_range->>'min')::int
+        age_range IS NULL OR (
+            age_range ? 'min' AND 
+            age_range ? 'max' AND 
+            (age_range->>'min')::int >= 0 AND 
+            (age_range->>'max')::int >= (age_range->>'min')::int
+        )
     )
 );
-
-CREATE TABLE toy_photos (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    toy_id UUID NOT NULL REFERENCES toys(id),
-    url VARCHAR(500) NOT NULL,
-    cloudinary_id VARCHAR(255) NOT NULL,
-    is_main BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Создаем уникальный индекс для главного фото
-CREATE UNIQUE INDEX idx_toy_photos_main ON toy_photos (toy_id) WHERE is_main = true;
-
--- Создаем остальные индексы
-CREATE INDEX idx_toys_user ON toys(user_id);
-CREATE INDEX idx_toys_category_active ON toys(category) WHERE status = 'active';
-CREATE INDEX idx_toys_status_not_deleted ON toys(status) WHERE is_deleted IS NULL;
-CREATE INDEX idx_toy_photos_toy ON toy_photos(toy_id);
