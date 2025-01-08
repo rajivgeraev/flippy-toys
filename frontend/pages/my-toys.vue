@@ -22,7 +22,10 @@
         </div>
 
         <div v-else class="grid grid-cols-2 gap-4">
-            <div v-for="toy in toys" :key="toy.id" class="bg-white rounded-lg shadow overflow-hidden">
+            <!-- Добавляем клик по карточке -->
+            <div v-for="toy in toys" :key="toy.id"
+                class="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition"
+                @click="navigateToToy(toy.id)">
                 <img :src="toy.photos && toy.photos.length > 0 ? toy.photos[0].url : '/placeholder.jpg'"
                     class="w-full h-32 object-cover" />
                 <div class="p-3">
@@ -46,6 +49,7 @@ const router = useRouter();
 const toys = ref([]);
 const loading = ref(true);
 
+// Получаем список игрушек
 const fetchToys = async () => {
     try {
         // Ждем инициализации
@@ -68,10 +72,17 @@ const fetchToys = async () => {
     }
 };
 
+// Переход на страницу добавления новой игрушки
 const navigateToAdd = () => {
     router.push('/toys/add');
 };
 
+// Переход на страницу редактирования конкретной игрушки
+const navigateToToy = (id) => {
+    router.push(`/toys/${id}`);
+};
+
+// Загружаем список при монтировании компонента
 onMounted(() => {
     fetchToys();
 });
