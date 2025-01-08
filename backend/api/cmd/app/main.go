@@ -88,6 +88,9 @@ func main() {
 		Methods("POST", "OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET", "OPTIONS")
+	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
+		Methods("PUT", "OPTIONS")
+
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
 		Methods("GET", "OPTIONS")
 

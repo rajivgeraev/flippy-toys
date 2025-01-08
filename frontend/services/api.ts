@@ -51,10 +51,12 @@ interface CreateToyRequest {
   photos: PhotoData[];
 }
 
+const BASE_URL = 'https://api.flippy.toys/api/v1';
+
 export const api = {
   async validateUser(initData: string): Promise<User> {
     try {
-      const response = await fetch('https://api.flippy.toys/api/v1/auth/validate', {
+      const response = await fetch(`${BASE_URL}/auth/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ export const api = {
   },
 
   async createToy(data: CreateToyRequest): Promise<any> {
-    const response = await fetch('https://api.flippy.toys/api/v1/toys', {
+    const response = await fetch(`${BASE_URL}/toys`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +93,7 @@ export const api = {
   },
 
   async getUserToys(data: CreateToyRequest): Promise<any> {
-    const response = await fetch('https://api.flippy.toys/api/v1/toys/my', {
+    const response = await fetch(`${BASE_URL}/toys/my`, {
       method: 'GET',
       headers: {
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
@@ -104,5 +106,38 @@ export const api = {
     }
 
     return response.json();
+  },
+
+  async getToy(id: string): Promise<any> {
+    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
+      method: 'GET',
+      headers: {
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch toy');
+    }
+
+    return response.json();
+  },
+
+  async updateToy(id: string, data: any): Promise<any> {
+    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update toy');
+    }
+
+    return response.json();
   }
+
 };

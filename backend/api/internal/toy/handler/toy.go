@@ -161,3 +161,27 @@ func (h *ToyHandler) GetUploadParams(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(params)
 }
+
+func (h *ToyHandler) UpdateToy(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	toyID, err := uuid.Parse(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid toy ID", http.StatusBadRequest)
+		return
+	}
+
+	var input toySrv.UpdateToyInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	toy, err := h.service.UpdateToy(r.Context(), toyID, input)
+	if err != nil {
+		http.Error(w, "Failed to update toy", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(toy)
+}
