@@ -24,6 +24,33 @@ interface User {
   telegram_profile: TelegramProfile;
 }
 
+interface ToyCreate {
+  title: string;
+  description?: string;
+  age_min?: number;
+  age_max?: number;
+  condition?: string;
+  category?: string;
+  photos?: File[];
+}
+
+
+interface PhotoData {
+  secure_url: string;
+  public_id: string;
+  asset_id: string;
+}
+
+interface CreateToyRequest {
+  title: string;
+  description?: string;
+  age_min?: number;
+  age_max?: number;
+  condition?: string;
+  category?: string;
+  photos: PhotoData[];
+}
+
 export const api = {
   async validateUser(initData: string): Promise<User> {
     try {
@@ -44,5 +71,38 @@ export const api = {
       console.error('Validation error:', error);
       throw error;
     }
+  },
+
+  async createToy(data: CreateToyRequest): Promise<any> {
+    const response = await fetch('https://api.flippy.toys/api/v1/toys', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create toy');
+    }
+
+    return response.json();
+  },
+
+  async getUserToys(data: CreateToyRequest): Promise<any> {
+    const response = await fetch('https://api.flippy.toys/api/v1/toys/my', {
+      method: 'GET',
+      headers: {
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create toy');
+    }
+
+    return response.json();
   }
 };

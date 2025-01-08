@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "flippy-toys",
+            "connectString": "postgresql://postgres:mmMulzXVKKimglPRZPPsYQGHBiXUBuwt@viaduct.proxy.rlwy.net:22772/railway"
+        }
+    ]
+}

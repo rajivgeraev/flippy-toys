@@ -3,6 +3,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -33,6 +34,8 @@ func (h *UserHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Printf("Telegram InitData : %s\n", req.InitData)
 
 	user, err := h.service.ProcessTelegramAuth(req.InitData, h.cfg.BotToken)
 	if err != nil {
