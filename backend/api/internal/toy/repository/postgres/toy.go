@@ -252,6 +252,7 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 			return nil, err
 		}
 
+		// Декодируем age_range
 		if ageRangeJSON != nil {
 			var ageRange model.AgeRange
 			if err := json.Unmarshal(ageRangeJSON, &ageRange); err != nil {
@@ -269,6 +270,13 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 			c := model.ToyCategory(*category)
 			toy.Category = &c
 		}
+
+		// Загружаем фотографии
+		photos, err := r.getPhotos(toy.ID)
+		if err != nil {
+			return nil, err
+		}
+		toy.Photos = photos
 
 		toys = append(toys, toy)
 	}
