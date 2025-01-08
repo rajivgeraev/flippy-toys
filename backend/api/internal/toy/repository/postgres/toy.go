@@ -55,7 +55,30 @@ func (r *ToyRepository) SoftDelete(toyID uuid.UUID) error {
 
 // Update implements repository.ToyRepository.
 func (r *ToyRepository) Update(toy *model.Toy) error {
-	panic("unimplemented")
+	query := `
+        UPDATE toys 
+        SET title = $1, 
+            description = $2, 
+            condition = $3, 
+            category = $4, 
+            updated_at = NOW()
+        WHERE id = $5 AND is_deleted IS NULL
+        RETURNING updated_at`
+
+	err := r.db.QueryRow(
+		query,
+		toy.Title,
+		toy.Description,
+		toy.Condition,
+		toy.Category,
+		toy.ID,
+	).Scan(&toy.UpdatedAt)
+
+	if err != nil {
+		return fmt.Errorf("failed to update toy: %w", err)
+	}
+
+	return nil
 }
 
 func NewToyRepository(db *sql.DB) *ToyRepository {
