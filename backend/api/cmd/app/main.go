@@ -92,8 +92,12 @@ func main() {
 		Methods("POST", "OPTIONS")
 
 	// Toy routes
+	protected.HandleFunc("/toys", HandleOptionsCors).
+		Methods("OPTIONS")
 	protected.HandleFunc("/toys", toysHandler.CreateToy).
-		Methods("POST", "OPTIONS")
+		Methods("POST")
+	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
+		Methods("GET")
 
 	protected.HandleFunc("/toys/id/{id}", HandleOptionsCors).
 		Methods("OPTIONS")
@@ -101,9 +105,6 @@ func main() {
 		Methods("GET")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
 		Methods("POST")
-
-	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
-		Methods("GET", "OPTIONS")
 
 	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).
 		Methods("GET", "OPTIONS")

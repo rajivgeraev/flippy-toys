@@ -124,7 +124,7 @@ export const api = {
   },
 
   async updateToy(id: string, data: any): Promise<any> {
-    const response = await fetch(`${BASE_URL}/toys/id/${id}/update`, {
+    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
