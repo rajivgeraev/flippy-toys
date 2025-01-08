@@ -27,7 +27,7 @@
                 class="bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-lg transition"
                 @click="navigateToToy(toy.id)">
                 <img :src="toy.photos && toy.photos.length > 0 ? getOptimizedImageUrl(toy.photos[0].url, 300, 200) : '/placeholder.jpg'"
-                    class="w-full h-32 object-cover" />
+                    loading="lazy" class="w-full h-32 object-cover" />
                 <div class="p-3">
                     <h3 class="font-medium text-sm mb-1">{{ toy.title }}</h3>
                     <p class="text-gray-500 text-xs">

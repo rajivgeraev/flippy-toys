@@ -25,7 +25,7 @@
                 <label class="block text-sm font-medium text-gray-700">Фотографии</label>
                 <div class="grid grid-cols-3 gap-4 mt-2">
                     <div v-for="photo in toy.photos" :key="photo.id" class="aspect-square rounded-lg overflow-hidden">
-                        <img :src="getOptimizedImageUrl(photo.url, 300, 300)" class="w-full h-full object-cover"
+                        <img :src="getOptimizedImageUrl(photo.url, 300, 300)" loading="lazy" class="w-full h-full object-cover"
                             :alt="toy.title" />
                     </div>
                 </div>
