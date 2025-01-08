@@ -11,101 +11,54 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
-	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
-	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/service"
+	toyModel "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
+	toySrv "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/service"
 )
 
 type ToyHandler struct {
-	service *service.ToyService
+	service *toySrv.ToyService
 }
 
-func NewToyHandler(service *service.ToyService) *ToyHandler {
+func NewToyHandler(service *toySrv.ToyService) *ToyHandler {
 	return &ToyHandler{service: service}
 }
 
 func (h *ToyHandler) CreateToy(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		http.Error(w, "Failed to parse form", http.StatusBadRequest)
-		return
-	}
-
-	log.Printf("Received form data: %+v", r.MultipartForm.Value)
-
 	var input struct {
-		Title       string  `json:"title"`
-		Description string  `json:"description"`
-		AgeMin      *int    `json:"age_min,omitempty"`
-		AgeMax      *int    `json:"age_max,omitempty"`
-		Condition   *string `json:"condition,omitempty"`
-		Category    *string `json:"category,omitempty"`
+		Title       string                   `json:"title"`
+		Description string                   `json:"description"`
+		Condition   string                   `json:"condition"`
+		Category    string                   `json:"category"`
+		Photos      []toySrv.CloudinaryPhoto `json:"photos"`
 	}
 
-	if err := json.Unmarshal([]byte(r.MultipartForm.Value["data"][0]), &input); err != nil {
-		http.Error(w, "Invalid input data", http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
-	}
-
-	// Валидация обязательных полей
-	if input.Title == "" {
-		http.Error(w, "Title is required", http.StatusBadRequest)
-		return
-	}
-
-	// Собираем фотографии
-	var photos [][]byte
-	files := r.MultipartForm.File["photos"]
-	for _, fileHeader := range files {
-		file, err := fileHeader.Open()
-		if err != nil {
-			http.Error(w, "Failed to read photo", http.StatusBadRequest)
-			return
-		}
-		defer file.Close()
-
-		photoData := make([]byte, fileHeader.Size)
-		if _, err := file.Read(photoData); err != nil {
-			http.Error(w, "Failed to read photo", http.StatusBadRequest)
-			return
-		}
-
-		photos = append(photos, photoData)
 	}
 
 	userID := r.Context().Value("user_id").(uuid.UUID)
 
-	// Создаем input для сервиса
-	createInput := service.CreateToyInput{
+	condition := toyModel.ToyCondition(input.Condition)
+	if condition == "" {
+		http.Error(w, "Invalid request body - condition is required ", http.StatusBadRequest)
+	}
+	category := toyModel.ToyCategory(input.Category)
+	if category == "" {
+		http.Error(w, "Invalid request body - category is required ", http.StatusBadRequest)
+	}
+
+	toy, err := h.service.CreateToy(r.Context(), toySrv.CreateToyInput{
 		UserID:      userID,
 		Title:       input.Title,
 		Description: input.Description,
-		Photos:      photos,
-	}
+		Condition:   &condition,
+		Category:    &category,
+		Photos:      input.Photos,
+	})
 
-	fmt.Printf("\n>>== createInput : %+v\n", createInput)
-
-	// Добавляем опциональные поля если они есть
-	if input.AgeMin != nil && input.AgeMax != nil {
-		createInput.AgeRange = &model.AgeRange{
-			Min: *input.AgeMin,
-			Max: *input.AgeMax,
-		}
-	}
-
-	if input.Condition != nil {
-		condition := model.ToyCondition(*input.Condition)
-		createInput.Condition = &condition
-	}
-
-	if input.Category != nil {
-		category := model.ToyCategory(*input.Category)
-		createInput.Category = &category
-	}
-	fmt.Printf(">>== Start  1: %s\n", "userID")
-
-	toy, err := h.service.CreateToy(r.Context(), createInput)
 	if err != nil {
-		fmt.Printf("\n>>== Error : %w\n", err)
-
+		log.Printf("Error creating toy: %v", err)
 		http.Error(w, "Failed to create toy", http.StatusInternalServerError)
 		return
 	}
@@ -157,7 +110,7 @@ func (h *ToyHandler) GetUserToys(w http.ResponseWriter, r *http.Request) {
 
 	if toys == nil {
 		fmt.Printf("No toys found, returning empty array\n")
-		toys = []model.Toy{}
+		toys = []toyModel.Toy{}
 	} else {
 		fmt.Printf("Found %d toys\n", len(toys))
 	}
@@ -188,7 +141,7 @@ func (h *ToyHandler) ListActive(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if toys == nil {
-		toys = []model.Toy{} // Возвращаем пустой массив вместо nil
+		toys = []toyModel.Toy{} // Возвращаем пустой массив вместо nil
 	}
 
 	w.Header().Set("Content-Type", "application/json")

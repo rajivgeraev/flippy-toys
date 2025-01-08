@@ -16,7 +16,26 @@ type ToyRepository struct {
 
 // AddPhoto implements repository.ToyRepository.
 func (r *ToyRepository) AddPhoto(photo *model.Photo) error {
-	panic("unimplemented")
+	query := `
+        INSERT INTO toy_photos (
+            toy_id, url, cloudinary_id, asset_id, is_main, created_at
+        ) VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING id`
+
+	err := r.db.QueryRow(
+		query,
+		photo.ToyID,
+		photo.URL,
+		photo.CloudinaryID,
+		photo.AssetID,
+		photo.IsMain,
+	).Scan(&photo.ID)
+
+	if err != nil {
+		return fmt.Errorf("failed to add photo: %w", err)
+	}
+
+	return nil
 }
 
 // DeletePhoto implements repository.ToyRepository.
@@ -53,16 +72,19 @@ func (r *ToyRepository) Create(toy *model.Toy) error {
 	fmt.Printf("Creating toy: %+v", toy)
 
 	query := `
-        INSERT INTO toys (
-            user_id, title, description
-        ) VALUES ($1, $2, $3)
-        RETURNING id, created_at, updated_at`
+		INSERT INTO toys (
+			user_id, title, description, condition, category, status, created_at, updated_at
+		) VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+		RETURNING id, created_at, updated_at`
 
 	err = tx.QueryRow(
 		query,
 		toy.UserID,
 		toy.Title,
 		toy.Description,
+		toy.Condition, // Добавлено поле condition
+		toy.Category,  // Добавлено поле category
+		toy.Status,
 	).Scan(&toy.ID, &toy.CreatedAt, &toy.UpdatedAt)
 	if err != nil {
 		return fmt.Errorf("failed to insert toy: %w", err)

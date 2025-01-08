@@ -58,8 +58,9 @@ type Toy struct {
 type Photo struct {
 	ID           uuid.UUID `json:"id"`
 	ToyID        uuid.UUID `json:"toy_id"`
-	URL          string    `json:"url"`
-	CloudinaryID string    `json:"cloudinary_id"`
+	URL          string    `json:"url"`           // secure_url из Cloudinary
+	CloudinaryID string    `json:"cloudinary_id"` // public_id из Cloudinary
+	AssetID      string    `json:"asset_id"`      // asset_id из Cloudinary
 	IsMain       bool      `json:"is_main"`
 	CreatedAt    time.Time `json:"created_at"`
 }
