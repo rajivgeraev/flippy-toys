@@ -17,14 +17,6 @@ import (
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/service"
 )
 
-var HandleOptionsCors = func(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://app.flippy.toys")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Telegram-Init-Data")
-	w.WriteHeader(http.StatusOK)
-}
-
 func main() {
 	// Загрузка конфигурации
 	cfg := config.LoadConfig()
@@ -91,20 +83,16 @@ func main() {
 	protected.HandleFunc("/users/phone", userHandler.UpdatePhone).
 		Methods("POST", "OPTIONS")
 
-	protected.HandleFunc("/toys/id/{id}", HandleOptionsCors).
-		Methods("OPTIONS")
+	// Toy routes
+	protected.HandleFunc("/toys", toysHandler.CreateToy).
+		Methods("POST", "OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
-		Methods("GET")
+		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
 		Methods("POST")
 
-	// Toy routes
-	protected.HandleFunc("/toys", HandleOptionsCors).
-		Methods("OPTIONS")
-	protected.HandleFunc("/toys", toysHandler.CreateToy).
-		Methods("POST")
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
-		Methods("GET")
+		Methods("GET", "OPTIONS")
 
 	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).
 		Methods("GET", "OPTIONS")
