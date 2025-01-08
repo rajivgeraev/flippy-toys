@@ -3,9 +3,11 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-xl font-bold">Просмотр игрушки</h1>
             <div class="flex gap-2">
+                <!-- Кнопка отмены -->
                 <button v-if="hasChanges" @click="cancelEdit" class="bg-gray-500 text-white px-4 py-2 rounded-full">
                     Отмена
                 </button>
+                <!-- Кнопка сохранения -->
                 <button v-if="hasChanges" @click="saveToy" :disabled="isSaving"
                     class="bg-purple-600 text-white px-4 py-2 rounded-full disabled:bg-purple-400">
                     {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
@@ -63,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { api } from '~/services/api';
 
@@ -94,8 +96,11 @@ const router = useRouter();
 const toy = ref({});
 const originalToy = ref(null);
 const loading = ref(true);
-const isEditing = ref(false);
 const isSaving = ref(false);
+
+const hasChanges = computed(() => {
+    return JSON.stringify(toy.value) !== JSON.stringify(originalToy.value);
+});
 
 // Загрузка данных игрушки
 const fetchToy = async () => {
@@ -110,15 +115,9 @@ const fetchToy = async () => {
     }
 };
 
-// Переключить режим редактирования
-const toggleEdit = () => {
-    isEditing.value = !isEditing.value;
-};
-
 // Отмена редактирования
 const cancelEdit = () => {
     toy.value = JSON.parse(JSON.stringify(originalToy.value));
-    isEditing.value = false;
 };
 
 // Сохранение изменений
@@ -129,7 +128,6 @@ const saveToy = async () => {
     try {
         await api.updateToy(route.params.id, toy.value);
         originalToy.value = JSON.parse(JSON.stringify(toy.value));
-        isEditing.value = false;
     } catch (error) {
         console.error('Ошибка сохранения:', error);
     } finally {
