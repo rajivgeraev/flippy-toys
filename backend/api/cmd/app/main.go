@@ -89,7 +89,7 @@ func main() {
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
-		Methods("PUT", "OPTIONS")
+		Methods("PUT")
 
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
 		Methods("GET", "OPTIONS")
