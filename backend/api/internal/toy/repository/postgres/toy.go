@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
 )
 
@@ -305,6 +306,60 @@ func (r *ToyRepository) GetByUserID(userID uuid.UUID) ([]model.Toy, error) {
 		photos, err := r.getPhotos(toy.ID)
 		if err != nil {
 			return nil, err
+		}
+		toy.Photos = photos
+
+		toys = append(toys, toy)
+	}
+
+	return toys, rows.Err()
+}
+
+func (r *ToyRepository) ListWithFilters(filters *model.ToyFilters) ([]model.Toy, error) {
+	query := `
+        SELECT t.id, t.user_id, t.title, t.description, 
+               t.condition, t.category, t.status,
+               t.is_deleted, t.created_at, t.updated_at
+        FROM toys t
+        WHERE t.status = 'active' AND t.is_deleted IS NULL`
+
+	args := make([]interface{}, 0)
+	if len(filters.Categories) > 0 {
+		query += ` AND t.category = ANY($1)`
+		args = append(args, pq.Array(filters.Categories))
+	}
+
+	query += ` ORDER BY t.created_at DESC`
+
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list toys: %w", err)
+	}
+	defer rows.Close()
+
+	var toys []model.Toy
+	for rows.Next() {
+		var toy model.Toy
+		err := rows.Scan(
+			&toy.ID,
+			&toy.UserID,
+			&toy.Title,
+			&toy.Description,
+			&toy.Condition,
+			&toy.Category,
+			&toy.Status,
+			&toy.IsDeleted,
+			&toy.CreatedAt,
+			&toy.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan toy: %w", err)
+		}
+
+		// Загружаем фотографии для каждой игрушки
+		photos, err := r.getPhotos(toy.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get photos: %w", err)
 		}
 		toy.Photos = photos
 

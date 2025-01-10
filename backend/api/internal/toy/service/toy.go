@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/cloudinary"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
 	toyModel "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/repository"
 )
@@ -149,4 +150,8 @@ func (s *ToyService) UpdateToy(ctx context.Context, id uuid.UUID, input UpdateTo
 	}
 
 	return toy, nil
+}
+
+func (s *ToyService) ListToysWithFilters(ctx context.Context, filters *model.ToyFilters) ([]model.Toy, error) {
+	return s.repo.ListWithFilters(filters)
 }
