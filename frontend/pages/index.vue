@@ -105,22 +105,27 @@ const getConditionClass = (condition) => {
   }
 };
 
-const toggleCategory = (category) => {
+const toggleCategory = async (category) => {
   const index = selectedCategories.value.indexOf(category);
   if (index === -1) {
     selectedCategories.value.push(category);
   } else {
     selectedCategories.value.splice(index, 1);
   }
+  // Сразу вызываем fetchToys после изменения категорий
+  await fetchToys();
 };
 
+
 // Обновляем fetchToys при изменении фильтров
-watch(selectedCategories, async () => {
-  await fetchToys();
-});
+// watch(selectedCategories, async () => {
+//   await fetchToys();
+// });
+
 
 const fetchToys = async () => {
   loading.value = true;
+  console.log('Fetching toys with categories:', selectedCategories.value); // добавим лог
   try {
     const response = await api.listToys({
       categories: selectedCategories.value
