@@ -129,7 +129,7 @@ export const api = {
   },
 
   async getToy(id: string): Promise<Toy> {
-    const response = await fetch(`${BASE_URL}/toys/${id}`, {
+    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
       headers: {
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
       }
