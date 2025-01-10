@@ -123,6 +123,28 @@ export const api = {
     return response.json();
   },
 
+  async listToys(params?: { categories?: string[] }): Promise<any> {
+    const queryParams = new URLSearchParams();
+    if (params?.categories?.length) {
+      queryParams.append('categories', params.categories.join(','));
+    }
+
+    const response = await fetch(
+      `${BASE_URL}/toys?${queryParams.toString()}`,
+      {
+        headers: {
+          'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch toys');
+    }
+
+    return response.json();
+  },
+
   async updateToy(id: string, data: any): Promise<any> {
     const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
       method: 'POST',
