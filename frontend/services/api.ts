@@ -14,14 +14,34 @@ interface TelegramProfile {
 interface User {
   id: string;
   display_name: string;
-  email?: string;
-  phone?: string;
-  real_first_name?: string;
-  real_last_name?: string;
   access_level: string;
+  telegram_profile: {
+    telegram_id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    photo_url: string;
+    language_code: string;
+    is_premium: boolean;
+  };
   created_at: string;
   updated_at: string;
-  telegram_profile: TelegramProfile;
+}
+
+interface Toy {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  condition: string;
+  category: string;
+  photos: Array<{
+    id: string;
+    url: string;
+    is_main: boolean;
+  }>;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ToyCreate {
@@ -51,10 +71,12 @@ interface CreateToyRequest {
   photos: PhotoData[];
 }
 
+const BASE_URL = 'https://api.flippy.toys/api/v1';
+
 export const api = {
   async validateUser(initData: string): Promise<User> {
     try {
-      const response = await fetch('https://api.flippy.toys/api/v1/auth/validate', {
+      const response = await fetch(`${BASE_URL}/auth/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +96,7 @@ export const api = {
   },
 
   async createToy(data: CreateToyRequest): Promise<any> {
-    const response = await fetch('https://api.flippy.toys/api/v1/toys', {
+    const response = await fetch(`${BASE_URL}/toys`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +113,7 @@ export const api = {
   },
 
   async getUserToys(data: CreateToyRequest): Promise<any> {
-    const response = await fetch('https://api.flippy.toys/api/v1/toys/my', {
+    const response = await fetch(`${BASE_URL}/toys/my`, {
       method: 'GET',
       headers: {
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
@@ -104,5 +126,74 @@ export const api = {
     }
 
     return response.json();
+  },
+
+  async getToy(id: string): Promise<Toy> {
+    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
+      headers: {
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch toy');
+    }
+
+    return response.json();
+  },
+
+  async listToys(params?: { categories?: string[] }): Promise<any> {
+    const queryParams = new URLSearchParams();
+    if (params?.categories?.length) {
+      queryParams.append('categories', params.categories.join(','));
+    }
+
+    const response = await fetch(
+      `${BASE_URL}/toys?${queryParams.toString()}`,
+      {
+        headers: {
+          'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch toys');
+    }
+
+    return response.json();
+  },
+
+  async getUser(userId: string): Promise<User> {
+    const response = await fetch(`${BASE_URL}/users/id/${userId}`, {
+      headers: {
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
+    }
+
+    return response.json();
+  },
+
+  async updateToy(id: string, data: any): Promise<any> {
+    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Ошибка сервера: ${errorText}`);
+    }
+
+    return response.json();
   }
+
 };

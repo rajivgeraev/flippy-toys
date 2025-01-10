@@ -174,3 +174,42 @@ func (r *UserRepository) UpdatePhone(telegramID int64, phone string) error {
 
 	return tx.Commit()
 }
+
+func (r *UserRepository) GetByID(id uuid.UUID) (*model.User, error) {
+	user := &model.User{
+		TelegramProfile: &model.TelegramProfile{}, // Инициализация TelegramProfile
+	}
+
+	query := `
+        SELECT u.id, u.display_name, u.phone, u.access_level, u.created_at, u.updated_at,
+               t.telegram_id, t.username, t.first_name, t.last_name, 
+               t.photo_url, t.language_code, t.is_premium
+        FROM users u
+        LEFT JOIN user_telegram t ON t.user_id = u.id
+        WHERE u.id = $1 AND u.is_deleted IS NULL`
+
+	err := r.db.QueryRow(query, id).Scan(
+		&user.ID,
+		&user.DisplayName,
+		&user.Phone,
+		&user.AccessLevel,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.TelegramProfile.TelegramID,
+		&user.TelegramProfile.Username,
+		&user.TelegramProfile.FirstName,
+		&user.TelegramProfile.LastName,
+		&user.TelegramProfile.PhotoURL,
+		&user.TelegramProfile.LanguageCode,
+		&user.TelegramProfile.IsPremium,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

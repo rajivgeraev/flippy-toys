@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -160,4 +161,55 @@ func (h *ToyHandler) GetUploadParams(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(params)
+}
+
+func (h *ToyHandler) UpdateToy(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	toyID, err := uuid.Parse(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid toy ID", http.StatusBadRequest)
+		return
+	}
+
+	var input toySrv.UpdateToyInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	toy, err := h.service.UpdateToy(r.Context(), toyID, input)
+	if err != nil {
+		http.Error(w, "Failed to update toy", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(toy)
+}
+
+func (h *ToyHandler) ListToys(w http.ResponseWriter, r *http.Request) {
+	// Получаем параметры фильтрации
+	categories := r.URL.Query().Get("categories")
+	var categoryList []string
+	if categories != "" {
+		categoryList = strings.Split(categories, ",")
+	}
+
+	// Получаем игрушки с фильтрами
+	toys, err := h.service.ListToysWithFilters(r.Context(), &toyModel.ToyFilters{
+		Categories: categoryList,
+	})
+
+	if err != nil {
+		log.Printf("Error listing toys: %v", err)
+		http.Error(w, "Failed to list toys", http.StatusInternalServerError)
+		return
+	}
+
+	if toys == nil {
+		toys = []toyModel.Toy{} // Возвращаем пустой массив вместо nil
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(toys)
 }

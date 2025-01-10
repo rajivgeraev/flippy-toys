@@ -16,4 +16,5 @@ type ToyRepository interface {
 	DeletePhoto(photoID uuid.UUID) error
 	SetMainPhoto(photoID uuid.UUID) error
 	SoftDelete(toyID uuid.UUID) error
+	ListWithFilters(filters *model.ToyFilters) ([]model.Toy, error)
 }

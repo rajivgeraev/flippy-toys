@@ -82,13 +82,21 @@ func main() {
 		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/users/phone", userHandler.UpdatePhone).
 		Methods("POST", "OPTIONS")
+	protected.HandleFunc("/users/id/{id}", userHandler.GetUser).
+		Methods("GET", "OPTIONS")
 
 	// Toy routes
 	protected.HandleFunc("/toys", toysHandler.CreateToy).
 		Methods("POST", "OPTIONS")
 	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
 		Methods("GET", "OPTIONS")
+	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
+		Methods("POST", "OPTIONS")
+
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
+		Methods("GET", "OPTIONS")
+
+	protected.HandleFunc("/toys", toysHandler.ListToys).
 		Methods("GET", "OPTIONS")
 
 	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).

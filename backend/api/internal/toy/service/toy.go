@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/cloudinary"
+	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
 	toyModel "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/model"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/repository"
 )
@@ -111,4 +112,46 @@ func (s *ToyService) GetUploadParams(ctx context.Context) (*cloudinary.UploadPar
 		return nil, fmt.Errorf("failed to get upload params: %w", err)
 	}
 	return params, nil
+}
+
+type UpdateToyInput struct {
+	Title       *string                `json:"title"`
+	Description *string                `json:"description"`
+	Condition   *toyModel.ToyCondition `json:"condition"`
+	Category    *toyModel.ToyCategory  `json:"category"`
+	Photos      []CloudinaryPhoto      `json:"photos"`
+}
+
+func (s *ToyService) UpdateToy(ctx context.Context, id uuid.UUID, input UpdateToyInput) (*toyModel.Toy, error) {
+	toy, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch toy: %w", err)
+	}
+	if toy == nil {
+		return nil, fmt.Errorf("toy not found")
+	}
+
+	if input.Title != nil {
+		toy.Title = *input.Title
+	}
+	if input.Description != nil {
+		toy.Description = *input.Description
+	}
+	if input.Condition != nil {
+		toy.Condition = input.Condition
+	}
+	if input.Category != nil {
+		toy.Category = input.Category
+	}
+
+	err = s.repo.Update(toy)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update toy: %w", err)
+	}
+
+	return toy, nil
+}
+
+func (s *ToyService) ListToysWithFilters(ctx context.Context, filters *model.ToyFilters) ([]model.Toy, error) {
+	return s.repo.ListWithFilters(filters)
 }

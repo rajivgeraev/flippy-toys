@@ -64,3 +64,7 @@ type Photo struct {
 	IsMain       bool      `json:"is_main"`
 	CreatedAt    time.Time `json:"created_at"`
 }
+
+type ToyFilters struct {
+	Categories []string
+}

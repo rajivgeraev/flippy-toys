@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/config"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/service"
 )
@@ -79,6 +81,30 @@ func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error getting user: %v", err)
 		http.Error(w, "Failed to get user info", http.StatusInternalServerError)
+		return
+	}
+
+	if user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}
+
+func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, err := uuid.Parse(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	user, err := h.service.GetUserByID(userID)
+	if err != nil {
+		log.Printf("Error getting user: %v", err)
+		http.Error(w, "Failed to get user", http.StatusInternalServerError)
 		return
 	}
 
