@@ -82,6 +82,8 @@ func main() {
 		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/users/phone", userHandler.UpdatePhone).
 		Methods("POST", "OPTIONS")
+	protected.HandleFunc("/users/{id}", userHandler.GetUser).
+		Methods("GET", "OPTIONS")
 
 	// Toy routes
 	protected.HandleFunc("/toys", toysHandler.CreateToy).

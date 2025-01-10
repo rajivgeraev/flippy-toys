@@ -2,6 +2,7 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/auth/telegram"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/model"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/user/repository"
@@ -86,4 +87,8 @@ func (s *UserService) HasAdvancedAccess(telegramID int64) (bool, error) {
 		return false, nil
 	}
 	return user.AccessLevel == "advanced", nil
+}
+
+func (s *UserService) GetUserByID(id uuid.UUID) (*model.User, error) {
+	return s.repo.GetByID(id)
 }

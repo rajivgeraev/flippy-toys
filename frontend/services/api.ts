@@ -14,14 +14,34 @@ interface TelegramProfile {
 interface User {
   id: string;
   display_name: string;
-  email?: string;
-  phone?: string;
-  real_first_name?: string;
-  real_last_name?: string;
   access_level: string;
+  telegram_profile: {
+    telegram_id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    photo_url: string;
+    language_code: string;
+    is_premium: boolean;
+  };
   created_at: string;
   updated_at: string;
-  telegram_profile: TelegramProfile;
+}
+
+interface Toy {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  condition: string;
+  category: string;
+  photos: Array<{
+    id: string;
+    url: string;
+    is_main: boolean;
+  }>;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ToyCreate {
@@ -108,9 +128,8 @@ export const api = {
     return response.json();
   },
 
-  async getToy(id: string): Promise<any> {
-    const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
-      method: 'GET',
+  async getToy(id: string): Promise<Toy> {
+    const response = await fetch(`${BASE_URL}/toys/${id}`, {
       headers: {
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
       }
@@ -145,7 +164,7 @@ export const api = {
     return response.json();
   },
 
-  async getUser(userId: string): Promise<any> {
+  async getUser(userId: string): Promise<User> {
     const response = await fetch(`${BASE_URL}/users/${userId}`, {
       headers: {
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
