@@ -94,6 +94,9 @@ func main() {
 	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
 		Methods("GET", "OPTIONS")
 
+	protected.HandleFunc("/toys", toysHandler.ListToys).
+		Methods("GET", "OPTIONS")
+
 	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).
 		Methods("GET", "OPTIONS")
 
