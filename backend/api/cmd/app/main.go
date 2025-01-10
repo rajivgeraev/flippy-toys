@@ -82,7 +82,7 @@ func main() {
 		Methods("GET", "OPTIONS")
 	protected.HandleFunc("/users/phone", userHandler.UpdatePhone).
 		Methods("POST", "OPTIONS")
-	protected.HandleFunc("/users/{id}", userHandler.GetUser).
+	protected.HandleFunc("/users/id/{id}", userHandler.GetUser).
 		Methods("GET", "OPTIONS")
 
 	// Toy routes

@@ -165,7 +165,7 @@ export const api = {
   },
 
   async getUser(userId: string): Promise<User> {
-    const response = await fetch(`${BASE_URL}/users/${userId}`, {
+    const response = await fetch(`${BASE_URL}/users/id/${userId}`, {
       headers: {
         'X-Telegram-Init-Data': window.Telegram.WebApp.initData
       }

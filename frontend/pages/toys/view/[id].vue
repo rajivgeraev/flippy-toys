@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4">
+    <div class="p-4 pb-24"> <!-- Добавлен padding-bottom для кнопки "Связаться" -->
         <div v-if="loading" class="flex justify-center py-8">
             <Icon name="lucide:loader" size="32" class="animate-spin text-purple-600" />
         </div>
@@ -10,7 +10,8 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div v-for="(photo, index) in toy.photos" :key="index"
                         class="aspect-square rounded-lg overflow-hidden">
-                        <img :src="photo.url" class="w-full h-full object-cover" :alt="toy.title" />
+                        <img :src="getOptimizedImageUrl(photo.url, 300, 300)" loading="lazy"
+                            class="w-full h-full object-cover" :alt="toy.title" />
                     </div>
                 </div>
             </div>
@@ -31,8 +32,8 @@
             <div class="bg-white rounded-lg p-4 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div v-if="owner?.telegram_profile.photo_url" class="w-12 h-12 rounded-full overflow-hidden">
-                        <img :src="owner.telegram_profile.photo_url" class="w-full h-full object-cover"
-                            :alt="owner.telegram_profile.first_name" />
+                        <img :src="getOptimizedImageUrl(owner.telegram_profile.photo_url, 96, 96)" loading="lazy"
+                            class="w-full h-full object-cover" :alt="owner.telegram_profile.first_name" />
                     </div>
                     <div>
                         <h2 class="font-medium">
@@ -47,7 +48,8 @@
             </div>
 
             <!-- Кнопка связаться -->
-            <div class="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+            <div class="fixed bottom-16 left-0 right-0 p-4 bg-white border-t">
+                <!-- bottom-16 оставляет место для нижней навигации -->
                 <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-medium" @click="contactOwner">
                     Связаться с владельцем
                 </button>
@@ -73,6 +75,15 @@ const CONDITIONS = [
     { value: 'acceptable', label: 'Удовлетворительное' }
 ];
 
+const getOptimizedImageUrl = (url, width = 300, height = 300) => {
+    if (!url) return '/placeholder.jpg';
+
+    const parts = url.split('/upload/');
+    if (parts.length < 2) return url;
+
+    return `${parts[0]}/upload/w_${width},h_${height},c_fill,q_auto,f_auto/${parts[1]}`;
+};
+
 const getConditionClass = (condition) => {
     switch (condition) {
         case 'new': return 'bg-green-100 text-green-800';
@@ -87,7 +98,6 @@ const fetchToyDetails = async () => {
     try {
         const toyData = await api.getToy(route.params.id);
         toy.value = toyData;
-        // Получаем информацию о владельце
         const ownerData = await api.getUser(toyData.user_id);
         owner.value = ownerData;
     } catch (error) {
