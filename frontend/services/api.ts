@@ -145,6 +145,20 @@ export const api = {
     return response.json();
   },
 
+  async getUser(userId: string): Promise<any> {
+    const response = await fetch(`${BASE_URL}/users/${userId}`, {
+      headers: {
+        'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
+    }
+
+    return response.json();
+  },
+
   async updateToy(id: string, data: any): Promise<any> {
     const response = await fetch(`${BASE_URL}/toys/id/${id}`, {
       method: 'POST',

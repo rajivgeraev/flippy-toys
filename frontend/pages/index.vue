@@ -25,8 +25,8 @@
     </div>
 
     <div v-else class="grid grid-cols-2 gap-4" :class="{ 'opacity-50': loading }">
-      <div v-for="toy in toys" :key="toy.id" @click="router.push(`/toys/${toy.id}`)"
-        class="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]">
+      <div v-for="toy in toys" :key="toy.id" @click="router.push(`/toys/view/${toy.id}`)"
+        class="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer">
         <div class="aspect-square relative">
           <img :src="toy.photos[0]?.url || '/placeholder.jpg'" class="w-full h-full object-cover" :alt="toy.title" />
           <span :class="[
@@ -76,11 +76,18 @@ watch(selectedCategories, (newCategories) => {
 }, { deep: true });
 
 const CATEGORIES = [
-  { value: 'construction_toys', label: 'Конструкторы' },
+  { value: 'construction_toys', label: 'Конструктор' },
   { value: 'dolls', label: 'Куклы' },
-  { value: 'vehicles', label: 'Транспорт' },
-  { value: 'educational', label: 'Обучающие' },
-  { value: 'outdoor', label: 'Уличные' }
+  { value: 'vehicles', label: 'Машинки' },
+  { value: 'educational', label: 'Развивающие' },
+  { value: 'outdoor', label: 'Для улицы' },
+  { value: 'board_games', label: 'Настольные игры' },
+  { value: 'electronic', label: 'Электронные' },
+  { value: 'stuffed_animals', label: 'Мягкие игрушки' },
+  { value: 'action_figures', label: 'Фигурки' },
+  { value: 'arts_crafts', label: 'Творчество' },
+  { value: 'musical', label: 'Музыкальные' },
+  { value: 'other', label: 'Другое' }
 ];
 
 const CONDITIONS = [
