@@ -206,6 +206,10 @@ func (h *ToyHandler) ListToys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if toys == nil {
+		toys = []toyModel.Toy{} // Возвращаем пустой массив вместо nil
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(toys)
 }
