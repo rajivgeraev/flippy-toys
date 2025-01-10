@@ -176,7 +176,9 @@ func (r *UserRepository) UpdatePhone(telegramID int64, phone string) error {
 }
 
 func (r *UserRepository) GetByID(id uuid.UUID) (*model.User, error) {
-	user := &model.User{}
+	user := &model.User{
+		TelegramProfile: &model.TelegramProfile{}, // Инициализация TelegramProfile
+	}
 
 	query := `
         SELECT u.id, u.display_name, u.phone, u.access_level, u.created_at, u.updated_at,
