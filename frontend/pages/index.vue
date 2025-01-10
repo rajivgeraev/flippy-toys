@@ -46,28 +46,41 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { api } from '~/services/api';
 
 const router = useRouter();
+const route = useRoute();
 const loading = ref(true);
 const toys = ref([]);
 const selectedCategories = ref([]);
 
+// Инициализация фильтров из URL
+onMounted(() => {
+  const categories = route.query.categories;
+  if (categories) {
+    selectedCategories.value = Array.isArray(categories) ? categories : [categories];
+  }
+  fetchToys();
+});
+
+// Синхронизация URL с фильтрами
+watch(selectedCategories, (newCategories) => {
+  router.push({
+    query: {
+      ...route.query,
+      categories: newCategories.length ? newCategories : undefined
+    }
+  });
+}, { deep: true });
+
 const CATEGORIES = [
-  { value: 'construction_toys', label: 'Конструктор' },
+  { value: 'construction_toys', label: 'Конструкторы' },
   { value: 'dolls', label: 'Куклы' },
-  { value: 'vehicles', label: 'Машинки' },
-  { value: 'educational', label: 'Развивающие' },
-  { value: 'outdoor', label: 'Для улицы' },
-  { value: 'board_games', label: 'Настольные игры' },
-  { value: 'electronic', label: 'Электронные' },
-  { value: 'stuffed_animals', label: 'Мягкие игрушки' },
-  { value: 'action_figures', label: 'Фигурки' },
-  { value: 'arts_crafts', label: 'Творчество' },
-  { value: 'musical', label: 'Музыкальные' },
-  { value: 'other', label: 'Другое' }
+  { value: 'vehicles', label: 'Транспорт' },
+  { value: 'educational', label: 'Обучающие' },
+  { value: 'outdoor', label: 'Уличные' }
 ];
 
 const CONDITIONS = [
@@ -92,15 +105,19 @@ const getConditionClass = (condition) => {
   }
 };
 
-const toggleCategory = async (category) => {
+const toggleCategory = (category) => {
   const index = selectedCategories.value.indexOf(category);
   if (index === -1) {
     selectedCategories.value.push(category);
   } else {
     selectedCategories.value.splice(index, 1);
   }
-  await fetchToys();
 };
+
+// Обновляем fetchToys при изменении фильтров
+watch(selectedCategories, async () => {
+  await fetchToys();
+});
 
 const fetchToys = async () => {
   loading.value = true;
@@ -115,8 +132,4 @@ const fetchToys = async () => {
     loading.value = false;
   }
 };
-
-onMounted(() => {
-  fetchToys();
-});
 </script>
