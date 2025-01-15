@@ -22,3 +22,14 @@ frontend/*.log
 **/.env
 **/.env.*
 !**/.env.example
+
+# Python
+backend/bot/__pycache__/
+backend/bot/*.py[cod]
+backend/bot/*$py.class
+
+# Virtual environment
+backend/bot/venv/
+
+# Logs
+*.log
