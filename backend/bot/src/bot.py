@@ -15,7 +15,9 @@ async def main():
     )
 
     config = load_config()
-    bot = Bot(token=config.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(
+        token=config.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+    )
     dp = Dispatcher()
 
     # Регистрация обработчиков
@@ -26,6 +28,7 @@ async def main():
 
     # Запуск бота
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

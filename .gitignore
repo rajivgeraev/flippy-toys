@@ -24,7 +24,7 @@ frontend/*.log
 !**/.env.example
 
 # Python
-backend/bot/__pycache__/
+**/__pycache__/
 backend/bot/*.py[cod]
 backend/bot/*$py.class
 
@@ -33,3 +33,5 @@ backend/bot/venv/
 
 # Logs
 *.log
+
+.vscode/

@@ -14,5 +14,5 @@ def load_config() -> Config:
 
     return Config(
         token=getenv("BOT_TOKEN"),
-        webapp_url=getenv("WEBAPP_URL", "https://app.flippy.toys")
+        webapp_url=getenv("WEBAPP_URL", "https://app.flippy.toys"),
     )
