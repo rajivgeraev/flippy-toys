@@ -53,7 +53,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
               <div className="relative group h-full">
                 <div className="absolute inset-0 bg-yellow-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
-                  <div className="text-8xl sm:text-9xl">🏝️</div>
+                  <div className="text-7xl sm:text-9xl">🏝️</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-yellow-900">
                       Остров игрушек
@@ -74,7 +74,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
               <div className="relative group h-full">
                 <div className="absolute inset-0 bg-purple-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
-                  <div className="text-8xl sm:text-9xl">🔮</div>
+                  <div className="text-7xl sm:text-9xl">🔮</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-purple-900">
                       Магический остров
@@ -95,7 +95,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
               <div className="relative group h-full">
                 <div className="absolute inset-0 bg-pink-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
-                  <div className="text-8xl sm:text-9xl">🏰</div>
+                  <div className="text-7xl sm:text-9xl">🏰</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-pink-900">
                       Мой замок
@@ -116,7 +116,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
               <div className="relative group h-full">
                 <div className="absolute inset-0 bg-green-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative bg-gradient-to-br from-green-100 to-green-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
-                  <div className="text-8xl sm:text-9xl">🎮</div>
+                  <div className="text-7xl sm:text-9xl">🎮</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-green-900">
                       Игровой остров
