@@ -44,56 +44,90 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
         </div>
       </div>
 
-      {/* Main Islands */}
+      {/* Main Islands Grid */}
       <div className="px-4 pt-8">
         <div className="max-w-md mx-auto grid grid-cols-2 gap-6">
           {/* Treasure Island */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-yellow-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer">
-              <div className="text-5xl mb-3">🏝️</div>
-              <h3 className="text-lg font-bold text-yellow-900">
-                Остров игрушек
-              </h3>
-              <p className="text-sm text-yellow-700">Найди новые сокровища!</p>
-              <div className="absolute top-2 right-2 animate-bounce">✨</div>
+          <div className="relative pb-[100%]">
+            <div className="absolute inset-0">
+              <div className="relative group h-full">
+                <div className="absolute inset-0 bg-yellow-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
+                  <div className="text-4xl sm:text-5xl">🏝️</div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-yellow-900 line-clamp-1">
+                      Остров игрушек
+                    </h3>
+                    <p className="text-xs sm:text-sm text-yellow-700 line-clamp-2">
+                      Найди новые сокровища!
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute top-2 right-2 animate-bounce">✨</div>
+              </div>
             </div>
           </div>
 
           {/* Magic Island */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-purple-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer">
-              <div className="text-5xl mb-3">🔮</div>
-              <h3 className="text-lg font-bold text-purple-900">
-                Магический остров
-              </h3>
-              <p className="text-sm text-purple-700">Скажи своё желание!</p>
-              <div className="absolute top-2 right-2 animate-bounce">✨</div>
+          <div className="relative pb-[100%]">
+            <div className="absolute inset-0">
+              <div className="relative group h-full">
+                <div className="absolute inset-0 bg-purple-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
+                  <div className="text-4xl sm:text-5xl">🔮</div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-purple-900 line-clamp-1">
+                      Магический остров
+                    </h3>
+                    <p className="text-xs sm:text-sm text-purple-700 line-clamp-2">
+                      Скажи своё желание!
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute top-2 right-2 animate-bounce">✨</div>
+              </div>
             </div>
           </div>
 
           {/* Collection Castle */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-pink-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer">
-              <div className="text-5xl mb-3">🏰</div>
-              <h3 className="text-lg font-bold text-pink-900">Мой замок</h3>
-              <p className="text-sm text-pink-700">Твоя коллекция!</p>
-              <div className="absolute top-2 right-2 animate-bounce">✨</div>
+          <div className="relative pb-[100%]">
+            <div className="absolute inset-0">
+              <div className="relative group h-full">
+                <div className="absolute inset-0 bg-pink-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
+                  <div className="text-4xl sm:text-5xl">🏰</div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-pink-900 line-clamp-1">
+                      Мой замок
+                    </h3>
+                    <p className="text-xs sm:text-sm text-pink-700 line-clamp-2">
+                      Твоя коллекция!
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute top-2 right-2 animate-bounce">✨</div>
+              </div>
             </div>
           </div>
 
           {/* Game Island */}
-          <div className="relative group">
-            <div className="absolute inset-0 bg-green-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative bg-gradient-to-br from-green-100 to-green-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer">
-              <div className="text-5xl mb-3">🎮</div>
-              <h3 className="text-lg font-bold text-green-900">
-                Игровой остров
-              </h3>
-              <p className="text-sm text-green-700">Время веселья!</p>
-              <div className="absolute top-2 right-2 animate-bounce">✨</div>
+          <div className="relative pb-[100%]">
+            <div className="absolute inset-0">
+              <div className="relative group h-full">
+                <div className="absolute inset-0 bg-green-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-green-100 to-green-200 rounded-3xl h-full flex flex-col justify-between p-4 sm:p-6">
+                  <div className="text-4xl sm:text-5xl">🎮</div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-green-900 line-clamp-1">
+                      Игровой остров
+                    </h3>
+                    <p className="text-xs sm:text-sm text-green-700 line-clamp-2">
+                      Время веселья!
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute top-2 right-2 animate-bounce">✨</div>
+              </div>
             </div>
           </div>
         </div>

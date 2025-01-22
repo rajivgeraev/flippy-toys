@@ -1,5 +1,4 @@
 // src/components/pages/ClientPage.tsx
-// src/components/pages/ClientPage.tsx
 "use client";
 
 import { getChildren } from "@/lib/api/children";
