@@ -44,6 +44,12 @@ func TelegramAuth(botToken string, userService UserService) func(http.Handler) h
 			fmt.Printf("=== TelegramAuth Middleware ===\n")
 			fmt.Printf("Request URL: %s\n", r.URL.Path)
 			fmt.Printf("Request Method: %s\n", r.Method)
+			fmt.Printf("Headers:\n")
+			for key, values := range r.Header {
+				for _, value := range values {
+					fmt.Printf("  %s: %s\n", key, value)
+				}
+			}
 
 			initData := r.Header.Get("X-Telegram-Init-Data")
 			if initData == "" {

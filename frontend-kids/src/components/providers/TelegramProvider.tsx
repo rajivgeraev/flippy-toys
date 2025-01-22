@@ -4,7 +4,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import Script from "next/script";
 
-const TelegramAuthContext = createContext<string>("");
+const TelegramAuthContext = createContext<{
+  initData: string;
+  isReady: boolean;
+}>({ initData: "", isReady: false });
+
 export const useTelegramAuth = () => useContext(TelegramAuthContext);
 
 export default function TelegramProvider({
@@ -13,18 +17,40 @@ export default function TelegramProvider({
   children: React.ReactNode;
 }) {
   const [initData, setInitData] = useState("");
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-      setInitData(window.Telegram.WebApp.initData);
-    }
+    const initTelegram = () => {
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+        setInitData(window.Telegram.WebApp.initData);
+        setIsReady(true);
+      }
+    };
+
+    // Пробуем инициализировать сразу
+    initTelegram();
+
+    // И добавляем слушатель для скрипта
+    window.addEventListener("telegram-web-app-script-loaded", initTelegram);
+
+    return () => {
+      window.removeEventListener(
+        "telegram-web-app-script-loaded",
+        initTelegram
+      );
+    };
   }, []);
 
   return (
-    <TelegramAuthContext.Provider value={initData}>
-      <Script src="https://telegram.org/js/telegram-web-app.js" />
+    <TelegramAuthContext.Provider value={{ initData, isReady }}>
+      <Script
+        src="https://telegram.org/js/telegram-web-app.js"
+        onLoad={() => {
+          window.dispatchEvent(new Event("telegram-web-app-script-loaded"));
+        }}
+      />
       {children}
     </TelegramAuthContext.Provider>
   );
