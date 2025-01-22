@@ -3,11 +3,13 @@ from aiogram.types import (
     InlineKeyboardButton,
     ReplyKeyboardMarkup,
     KeyboardButton,
+    WebAppInfo,
 )
+from typing import List
+from ..models import Child
 
 
 def get_welcome_keyboard(webapp_url: str) -> InlineKeyboardMarkup:
-    """Клавиатура с кнопкой для открытия веб-приложения"""
     keyboard = [
         [
             InlineKeyboardButton(
@@ -18,11 +20,14 @@ def get_welcome_keyboard(webapp_url: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
-def get_location_keyboard() -> ReplyKeyboardMarkup:
-    """Клавиатура с кнопкой запроса геопозиции"""
+def get_children_keyboard(children: List[Child], kids_url: str) -> InlineKeyboardMarkup:
     keyboard = [
-        [KeyboardButton(text="📍 Отправить местоположение", request_location=True)]
+        [
+            InlineKeyboardButton(
+                text=f"👶 {child.name} ({child.age} лет)",
+                web_app={"url": f"{kids_url}/{child.id}"},
+            )
+        ]
+        for child in children
     ]
-    return ReplyKeyboardMarkup(
-        keyboard=keyboard, resize_keyboard=True, one_time_keyboard=True
-    )
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
