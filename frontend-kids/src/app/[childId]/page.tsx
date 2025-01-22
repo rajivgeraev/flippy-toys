@@ -1,6 +1,9 @@
 // src/app/[childId]/page.tsx
 import { ClientPage } from "@/components/pages/ClientPage";
 
+export const dynamic = "force-dynamic"; // Отключаем статическую генерацию
+export const runtime = "edge"; // Используем edge runtime для быстрого старта
+
 interface PageProps {
   params: Promise<{
     childId: string;
