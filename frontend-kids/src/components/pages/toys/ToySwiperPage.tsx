@@ -2,6 +2,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { getToys } from '@/lib/api/toys';
+import { getOptimizedImageUrl } from '@/utils/imageUrl';
 import Image from 'next/image';
 
 interface Props {
@@ -61,7 +62,7 @@ export function ToySwiperPage({ childId }: Props) {
                             <div className="relative h-full rounded-[2rem] overflow-hidden bg-white/30 backdrop-blur">
                                 <div className="relative w-full h-full">
                                     <Image
-                                        src={currentToy.photos[currentPhotoIndex]?.url}
+                                        src={getOptimizedImageUrl(currentToy.photos[currentPhotoIndex]?.url, 'main')}
                                         alt={currentToy.title}
                                         fill
                                         className="object-cover"
@@ -78,7 +79,7 @@ export function ToySwiperPage({ childId }: Props) {
                          ${index === currentPhotoIndex ? 'ring-4 ring-white/60 scale-110' : 'ring-2 ring-white/30 hover:ring-white/60 hover:scale-105'}`}
                                             >
                                                 <Image
-                                                    src={photo.url}
+                                                    src={getOptimizedImageUrl(photo.url, 'thumbnail')}
                                                     alt={`View ${index + 1}`}
                                                     fill
                                                     className="object-cover"

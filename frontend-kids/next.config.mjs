@@ -2,6 +2,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/db7miuexq/image/upload/**',
+      },
+    ],
+  },
+
   // другие настройки, которые мы добавили ранее
   headers: async () => [
     {
