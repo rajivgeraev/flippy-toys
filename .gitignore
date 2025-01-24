@@ -1,37 +1,13 @@
-# Nuxt dev/build outputs
-frontend/.output
-frontend/.data
-frontend/.nuxt
-frontend/.nitro
-frontend/.cache
-frontend/dist
 
-# Node dependencies
-frontend/node_modules
-
-# Logs
-frontend/logs
-frontend/*.log
-
-# Misc
 .DS_Store
 .fleet
 .idea
+.vscode/
 
-# Local env files
+# Логи
+*.log
+
+# Переменные окружения
 **/.env
 **/.env.*
 !**/.env.example
-
-# Python
-**/__pycache__/
-backend/bot/*.py[cod]
-backend/bot/*$py.class
-
-# Virtual environment
-backend/bot/venv/
-
-# Logs
-*.log
-
-.vscode/

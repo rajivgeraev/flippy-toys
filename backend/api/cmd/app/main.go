@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	childHandlerPkg "github.com/rajivgeraev/flippy-toys/backend/api/internal/child/handler"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/cloudinary"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/config"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/database"
@@ -100,6 +101,11 @@ func main() {
 		Methods("GET", "OPTIONS")
 
 	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).
+		Methods("GET", "OPTIONS")
+
+	// Childern routers
+	childHandler := childHandlerPkg.NewChildHandler()
+	protected.HandleFunc("/children", childHandler.GetChildren).
 		Methods("GET", "OPTIONS")
 
 	// Запуск сервера
