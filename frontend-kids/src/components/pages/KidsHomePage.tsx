@@ -1,8 +1,8 @@
-// src/components/pages/KidsHomePage.tsx
 "use client";
 
 import { Child } from "@/types/child";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
 interface KidsHomePageProps {
   child: Child;
@@ -10,6 +10,7 @@ interface KidsHomePageProps {
 
 export function KidsHomePage({ child }: KidsHomePageProps) {
   const [points] = useState(240);
+  const router = useRouter();
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -17,6 +18,10 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
       window.Telegram.WebApp.expand();
     }
   }, []);
+
+  const handleToyIslandClick = () => {
+    router.push(`${child.id}/swipe`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-400 via-blue-400 to-blue-500">
@@ -48,7 +53,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
       <div className="px-4 pt-8">
         <div className="max-w-md mx-auto grid grid-cols-2 gap-6">
           {/* Treasure Island */}
-          <div className="relative pb-[100%]">
+          <div className="relative pb-[100%] cursor-pointer" onClick={handleToyIslandClick}>
             <div className="absolute inset-0">
               <div className="relative group h-full">
                 <div className="absolute inset-0 bg-yellow-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
@@ -68,6 +73,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
             </div>
           </div>
 
+          {/* Rest of the islands remain the same... */}
           {/* Magic Island */}
           <div className="relative pb-[100%]">
             <div className="absolute inset-0">
