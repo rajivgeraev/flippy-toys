@@ -1,6 +1,11 @@
 package config
 
-import "os"
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 type Config struct {
 	BotToken               string
@@ -13,7 +18,14 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	return &Config{
+	// Try to load .env file first
+	err := godotenv.Load()
+	if err != nil {
+		log.Printf("Warning: .env file not found or cannot be loaded: %v", err)
+	}
+
+	// Load configuration from environment variables (either from .env or system env)
+	config := &Config{
 		BotToken:               getEnvOrDefault("BOT_TOKEN", ""),
 		Port:                   getEnvOrDefault("PORT", "8080"),
 		DatabaseURL:            getEnvOrDefault("DATABASE_URL", ""),
@@ -22,6 +34,8 @@ func LoadConfig() *Config {
 		CloudinaryApiSecret:    getEnvOrDefault("CLOUDINARY_API_SECRET", ""),
 		CloudinaryUploadPreset: getEnvOrDefault("CLOUDINARY_UPLOAD_PRESET", ""),
 	}
+
+	return config
 }
 
 func getEnvOrDefault(key, defaultValue string) string {
