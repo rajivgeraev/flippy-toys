@@ -35,6 +35,30 @@ type User struct {
 }
 
 func ValidateInitData(initData string, botToken string) (*InitData, error) {
+	// Check for development mode
+	devConfig := GetDevModeConfig()
+	if devConfig.Enabled {
+		// In development mode, parse the data without signature validation
+		values, err := url.ParseQuery(initData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse init data: %v", err)
+		}
+
+		// Parse the data and verify the user ID matches our dev user
+		data, err := parseInitData(values)
+		if err != nil {
+			return nil, err
+		}
+
+		// Verify the user ID matches our development user
+		if data.User.ID != devConfig.DevUserID {
+			return nil, fmt.Errorf("invalid user ID in development mode")
+		}
+
+		return data, nil
+	}
+
+	// Production mode: perform full validation
 	if err := initdata.Validate(initData, botToken, expIn); err != nil {
 		return nil, fmt.Errorf("validate error: %v", err)
 	}

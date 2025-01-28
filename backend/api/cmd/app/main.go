@@ -4,12 +4,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	childHandlerPkg "github.com/rajivgeraev/flippy-toys/backend/api/internal/child/handler"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/cloudinary"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/config"
 	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/database"
-	"github.com/rajivgeraev/flippy-toys/backend/api/internal/common/middleware"
+	customMiddleware "github.com/rajivgeraev/flippy-toys/backend/api/internal/common/middleware"
 	toyHandler "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/handler"
 	toyRepo "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/repository/postgres"
 	toyService "github.com/rajivgeraev/flippy-toys/backend/api/internal/toy/service"
@@ -64,49 +65,56 @@ func main() {
 	toysHandler := toyHandler.NewToyHandler(toyService)
 
 	// Настройка роутера
-	r := mux.NewRouter()
+	r := chi.NewRouter()
 
 	// Middleware для всех запросов
 	r.Use(middleware.Logger)
-	r.Use(middleware.CORS)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+	r.Use(customMiddleware.CORS)
 
-	// Открытые маршруты
-	r.HandleFunc("/api/v1/auth/validate", userHandler.ValidateUser).
-		Methods("POST", "OPTIONS")
+	// Health check endpoint
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"ok"}`))
+	})
 
-	// Защищенные маршруты
-	protected := r.PathPrefix("/api/v1").Subrouter()
-	protected.Use(middleware.TelegramAuth(cfg.BotToken, userService))
+	// API v1 router
+	r.Route("/api/v1", func(r chi.Router) {
+		// Auth routes
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/validate", userHandler.ValidateUser)
+		})
 
-	// User routes
-	protected.HandleFunc("/users/me", userHandler.GetMe).
-		Methods("GET", "OPTIONS")
-	protected.HandleFunc("/users/phone", userHandler.UpdatePhone).
-		Methods("POST", "OPTIONS")
-	protected.HandleFunc("/users/id/{id}", userHandler.GetUser).
-		Methods("GET", "OPTIONS")
+		// Protected routes
+		r.Group(func(r chi.Router) {
+			r.Use(customMiddleware.TelegramAuth(cfg.BotToken, userService))
 
-	// Toy routes
-	protected.HandleFunc("/toys", toysHandler.CreateToy).
-		Methods("POST", "OPTIONS")
-	protected.HandleFunc("/toys/id/{id}", toysHandler.GetToy).
-		Methods("GET", "OPTIONS")
-	protected.HandleFunc("/toys/id/{id}", toysHandler.UpdateToy).
-		Methods("POST", "OPTIONS")
+			// User routes
+			r.Route("/users", func(r chi.Router) {
+				r.Get("/me", userHandler.GetMe)
+				r.Post("/phone", userHandler.UpdatePhone)
+				r.Get("/{id}", userHandler.GetUser)
+			})
 
-	protected.HandleFunc("/toys/my", toysHandler.GetUserToys).
-		Methods("GET", "OPTIONS")
+			// Toy routes
+			r.Route("/toys", func(r chi.Router) {
+				r.Get("/my", toysHandler.GetUserToys)
+				r.Get("/upload/params", toysHandler.GetUploadParams)
+				r.Get("/{id}", toysHandler.GetToy)
+				r.Post("/{id}", toysHandler.UpdateToy)
+				r.Get("/", toysHandler.ListToys)
+				r.Post("/", toysHandler.CreateToy)
+			})
 
-	protected.HandleFunc("/toys", toysHandler.ListToys).
-		Methods("GET", "OPTIONS")
-
-	protected.HandleFunc("/toys/upload/params", toysHandler.GetUploadParams).
-		Methods("GET", "OPTIONS")
-
-	// Childern routers
-	childHandler := childHandlerPkg.NewChildHandler()
-	protected.HandleFunc("/children", childHandler.GetChildren).
-		Methods("GET", "OPTIONS")
+			// Children routes
+			r.Route("/children", func(r chi.Router) {
+				childHandler := childHandlerPkg.NewChildHandler()
+				r.Get("/", childHandler.GetChildren)
+			})
+		})
+	})
 
 	// Запуск сервера
 	port := ":" + cfg.Port
