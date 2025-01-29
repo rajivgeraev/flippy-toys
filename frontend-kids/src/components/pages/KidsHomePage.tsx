@@ -2,7 +2,7 @@
 
 import { Child } from "@/types/child";
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 interface KidsHomePageProps {
   child: Child;
@@ -37,7 +37,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
           {/* Character Speech */}
           <div className="bg-white rounded-2xl p-3 shadow-lg relative">
             <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45" />
-            <span className="text-xl">Привет, {child.name}! 👋</span>
+            <span className="text-xl">Hi, Victoria! 👋</span>
           </div>
           {/* Points Badge */}
           <div className="bg-yellow-400 rounded-xl px-4 py-2 shadow-lg">
@@ -53,7 +53,10 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
       <div className="px-4 pt-8">
         <div className="max-w-md mx-auto grid grid-cols-2 gap-6">
           {/* Treasure Island */}
-          <div className="relative pb-[100%] cursor-pointer" onClick={handleToyIslandClick}>
+          <div
+            className="relative pb-[100%] cursor-pointer"
+            onClick={handleToyIslandClick}
+          >
             <div className="absolute inset-0">
               <div className="relative group h-full">
                 <div className="absolute inset-0 bg-yellow-300 rounded-3xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
@@ -61,10 +64,10 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
                   <div className="text-7xl sm:text-9xl">🏝️</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-yellow-900">
-                      Остров игрушек
+                      Toy island
                     </h3>
                     <p className="text-xs sm:text-sm text-yellow-700 line-clamp-2">
-                      Найди новые сокровища!
+                      Find new treasures
                     </p>
                   </div>
                 </div>
@@ -83,10 +86,10 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
                   <div className="text-7xl sm:text-9xl">🔮</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-purple-900">
-                      Магический остров
+                      Magic island
                     </h3>
                     <p className="text-xs sm:text-sm text-purple-700 line-clamp-2">
-                      Скажи своё желание!
+                      Tell your desire
                     </p>
                   </div>
                 </div>
@@ -104,10 +107,10 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
                   <div className="text-7xl sm:text-9xl">🏰</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-pink-900">
-                      Мой замок
+                      My castle
                     </h3>
                     <p className="text-xs sm:text-sm text-pink-700 line-clamp-2">
-                      Твоя коллекция!
+                      Your collection
                     </p>
                   </div>
                 </div>
@@ -125,10 +128,10 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
                   <div className="text-7xl sm:text-9xl">🎮</div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-green-900">
-                      Игровой остров
+                      Game Island
                     </h3>
                     <p className="text-xs sm:text-sm text-green-700 line-clamp-2">
-                      Время веселья!
+                      The time of fun!
                     </p>
                   </div>
                 </div>
@@ -146,7 +149,7 @@ export function KidsHomePage({ child }: KidsHomePageProps) {
             <div className="text-6xl animate-pulse">🌳</div>
             <div className="flex-1">
               <div className="text-lg font-bold text-green-900">
-                Твоё волшебное дерево
+                Your magic tree
               </div>
               <div className="mt-2 bg-white/50 rounded-full h-4 overflow-hidden">
                 <div className="bg-green-500 h-full w-3/4 rounded-full" />
