@@ -1,9 +1,9 @@
 WELCOME_MESSAGE = """
-👋 Привет! Добро пожаловать в Flippy Toys!
+👋 Hello! Welcome to Flippy Toys!
 
-🎮 Мы помогаем покупать и продавать игрушки быстро и безопасно.
+🎮 We help to buy and sell toys quickly and safely.
 
-Нажми на кнопку ниже, чтобы начать пользоваться нашим сервисом!
+Click on the button below to start using our service!
 """
 
 NO_CHILDREN_MESSAGE = """

@@ -36,12 +36,45 @@ def generate_telegram_hash(data: dict, bot_token: str) -> str:
 
 
 @router.message(Command("start"))
-async def command_start(message: types.Message, webapp_url: str) -> None:
+async def command_start(
+    message: types.Message, bot: Bot, webapp_url: str, api_url: str, kids_url: str
+) -> None:
+    # Отправляем приветственное сообщение с основной кнопкой
     await message.answer(
         text=WELCOME_MESSAGE,
         reply_markup=get_welcome_keyboard(webapp_url),
         parse_mode="HTML",
     )
+
+    # Добавляем список детей
+    try:
+        auth_data = {
+            "query_id": str(time.time()),
+            "user": json.dumps(
+                {
+                    "id": message.from_user.id,
+                    "first_name": message.from_user.first_name,
+                    "last_name": message.from_user.last_name,
+                    "username": message.from_user.username,
+                    "language_code": message.from_user.language_code,
+                }
+            ),
+            "auth_date": str(int(time.time())),
+            "chat_type": "private",
+        }
+
+        auth_data["hash"] = generate_telegram_hash(auth_data, bot.token)
+
+        children = await get_children(api_url, auth_data)
+        if children:
+            await message.answer(
+                text="Choose a child for KIDS mode:",
+                reply_markup=get_children_keyboard(children, kids_url),
+            )
+    except Exception as e:
+        logging.error(f"Error getting children: {e}")
+        # В случае ошибки при старте не будем показывать сообщение об ошибке пользователю
+        # так как основное приветственное сообщение уже отправлено
 
 
 @router.message(Command("kids"))
